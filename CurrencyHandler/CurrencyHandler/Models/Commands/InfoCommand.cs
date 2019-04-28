@@ -1,0 +1,32 @@
+﻿using IO = System.IO;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
+namespace CurrencyHandler.Models.Commands
+{
+    public class InfoCommand : Command
+    {
+        private const string InfoTextPath = "Texts/Info.txt";
+
+        private InfoCommand()
+        {
+
+        }
+
+        public static InfoCommand Instance { get; } = new InfoCommand();
+
+        public override string Name => "Info";
+
+        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        {
+            var messageId = message.MessageId;
+            var chatSettingsId = message.Chat.Id;
+
+            var text = await IO.File.ReadAllTextAsync(InfoTextPath);
+
+            await client.SendTextMessageAsync(chatSettingsId, text, replyToMessageId: messageId);
+        }
+    }
+}

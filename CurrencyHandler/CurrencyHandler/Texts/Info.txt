@@ -1,0 +1,9 @@
+﻿💵 This is a bot that handles currency difference. 💵
+Type the amount of money in 🇷🇺RUB🇷🇺 to get that amount in other currencies (🇺🇸 🇺🇦 🇪🇺 🇷🇺).
+
+Commands:
+/info - get info
+/settings - display info about your current settings
+/percents n - set percents of the money input to be considered (n is input field, e.g /percents 100)
+/calc n - translate and display your amount of money in other currencies (n is input field e.g /calc 100)
+/currency - change currency

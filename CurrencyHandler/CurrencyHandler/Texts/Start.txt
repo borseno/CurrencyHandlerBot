@@ -1,0 +1,9 @@
+﻿Hello!
+I am a bot that handles currency. 
+I can easily get you your amount of rubles in other currencies and print them out.
+
+Commands:
+/info - get info
+/settings - display info about your current settings
+/percents n% - set percents of the money input to be considered (n is input field)
+/calc n - translate and display your amount of money in other currencies (n is input field)
