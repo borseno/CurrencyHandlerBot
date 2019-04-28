@@ -333,4 +333,4 @@ ASALocalRun/
 
 ## END GENERATED .GITIGNORE ##
 
-CurrencyHandler/CurrencyHandler/Models/AppSettings.cs
+/AppSettings.cs
