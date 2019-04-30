@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SQLite_Database\ChatSettings.sqlite">
+    <None Update="Models\Database\CurrenciesHandling.sqlite">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Texts\Info.txt">

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Contexts;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DbModels;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot.Types;
@@ -9,13 +11,13 @@ namespace CurrencyHandler.Models.QueryHandling
 {
     class CallBackMessageHandler
     {
+        private readonly CurrenciesRepository _repo;
+
         private readonly string[] _currencies = { "🇺🇦", "🇪🇺", "🇷🇺", "🇺🇸" };
 
-        private DbContext _ctx;
-
-        public CallBackMessageHandler(DbContext ctx)
+        public CallBackMessageHandler(CurrenciesRepository repo)
         {
-            _ctx = ctx;
+            _repo = repo;
         }
 
         public async Task Handle(CallbackQuery callbackQuery)
@@ -55,13 +57,10 @@ namespace CurrencyHandler.Models.QueryHandling
             }
 
             if (value != null)
-            {
-                await Settings.SetCurrencyForChat(chatId, value, (ChatSettingsContext)_ctx);
-            }
+                await _repo.SetCurrencyAsync(value, chatId);
             else
-            {
                 throw new InvalidOperationException("Attempt to save wrong currency value to db");
-            }
+            
         }
     }
 }

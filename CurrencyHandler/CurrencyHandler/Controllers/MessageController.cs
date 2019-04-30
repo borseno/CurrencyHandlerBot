@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CurrencyHandler.Models;
+using CurrencyHandler.Models.Database.Contexts;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DbModels;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;
@@ -26,13 +28,16 @@ namespace CurrencyHandler.Controllers
                 UpdateType.CallbackQuery
             };
 
-        private readonly CallBackMessageHandler _handler;
-        private readonly ChatSettingsContext _ctx;
+        private readonly CallBackMessageHandler _callBackMessageHandler;
+        private readonly InlineQueryHandler _inlineQueryHandler;
+        private readonly CurrenciesRepository _repo;
 
-        public MessageController(ChatSettingsContext ctx)
+        public MessageController(CurrenciesRepository repo)
         {
-            _ctx = ctx;
-            _handler = new CallBackMessageHandler(_ctx);
+            _callBackMessageHandler = new CallBackMessageHandler(repo);
+            _inlineQueryHandler = new InlineQueryHandler(repo);
+            
+            _repo = repo;
         }
 
         [HttpGet]
@@ -54,13 +59,13 @@ namespace CurrencyHandler.Controllers
             {
                 if (update.Type == UpdateType.CallbackQuery)
                 {
-                    await _handler.Handle(update.CallbackQuery);
+                    await _callBackMessageHandler.Handle(update.CallbackQuery);
                     return Ok();
                 }
 
                 if (update.Type == UpdateType.InlineQuery)
                 {
-                    await InlineQueryHandler.Handle(update.InlineQuery);
+                    await _inlineQueryHandler.HandleAsync(update.InlineQuery);
                     return Ok();
                 }
 
@@ -77,7 +82,7 @@ namespace CurrencyHandler.Controllers
                 {
                     if (command?.Contains(message.Text) ?? false)
                     {
-                        await command.Execute(message, botClient, _ctx);
+                        await command.Execute(message, botClient, _repo);
 
                         break;
                     }
@@ -93,9 +98,9 @@ namespace CurrencyHandler.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            _ctx.Dispose();
-
             base.Dispose(disposing);
+
+            _repo.Dispose();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -9,7 +10,7 @@ namespace CurrencyHandler.Models.Commands
     {
         public abstract string Name { get; }
 
-        public abstract Task Execute(Message message, TelegramBotClient client, DbContext db);
+        public abstract Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo);
 
         /// <summary>
         /// Indicates whether the given command is this command or not.

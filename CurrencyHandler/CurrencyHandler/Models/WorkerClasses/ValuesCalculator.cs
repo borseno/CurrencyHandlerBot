@@ -3,57 +3,34 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Extensions;
 using MainBankOfRussia.XmlModels;
 
 namespace CurrencyHandler.Models.WorkerClasses
 {
     public static class ValuesCalculator
     {
-        private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo() { NumberDecimalSeparator = "," };
+        private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
 
-        public static IEnumerable<KeyValuePair<string, decimal>> GetValuesInOtherCurrencies(decimal rubles, ValCurs data)
-        {
-            string[] neededCurrencies = { "UAH", "USD", "EUR" };
-
-            return data?.Valute
-                .Where(
-                    i => neededCurrencies
-                        .Contains(i.CharCode)
-                ).Select(
-                    i =>
-                    {
-                        var formatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
-
-                        return new KeyValuePair<string, decimal>(
-                            i.CharCode,
-                            rubles / (decimal.Parse(i.Value, formatInfo) / i.Nominal)
-                            );
-                    }
-                );
-        }
-
-        public static async Task<IDictionary<string, decimal>> GetValuesInRubAndOtherCurrencies(decimal value, string currency, ValCurs data)
+        public static async Task<Dictionary<string, decimal>> GetCurrenciesValuesAsync(decimal value, string currency, ValCurs data, string[] neededCurrencies)
         {
             return await Task.Run(() =>
             {
-                decimal rub = ConvertToRub(value, currency, data);             
-
-                string[] neededCurrencies = { "UAH", "USD", "EUR" };
+                decimal rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
 
                 var result = data?.Valute
-                    .Where(i => neededCurrencies.Contains(i.CharCode)
+                    .Where(i => i.CharCode.In(neededCurrencies)
                     ).Select(i =>
                         {
-                            var formatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
-
                             return new KeyValuePair<string, decimal>(
                                 i.CharCode,
-                                rub / (decimal.Parse(i.Value, formatInfo) / i.Nominal)
+                                rub / (decimal.Parse(i.Value, DecimalFormatInfo) / i.Nominal)
                             );
                         }
                     ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                result?.Add("RUB", rub);
+                if (neededCurrencies.Contains("RUB"))
+                    result.Add("RUB", rub);
 
                 return result;
             });

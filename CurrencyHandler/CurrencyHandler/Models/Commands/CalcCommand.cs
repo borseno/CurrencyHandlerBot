@@ -9,6 +9,8 @@ using CurrencyHandler.Models.WorkerClasses;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using System.Diagnostics;
+using CurrencyHandler.Models.Database.Contexts;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DbModels;
 
 namespace CurrencyHandler.Models.Commands
@@ -26,7 +28,7 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Calc";
 
-        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageText = message?.Text;
 
@@ -46,25 +48,16 @@ namespace CurrencyHandler.Models.Commands
             if (decimal.TryParse(content, out var value))
             {
                 var data = await CurrenciesDataCaching.GetValCurs();
-
-                var watch = Stopwatch.StartNew();
-
-                var percents = await Settings.GetPercentsForChat(chatSettingsId, (ChatSettingsContext)db);
-                var currency = await Settings.GetCurrencyForChat(chatSettingsId, (ChatSettingsContext)db);
-
-                watch.Stop();
+                var percents = await repo.GetPercentsAsync(chatSettingsId);
+                var currency = await repo.GetCurrencyAsync(chatSettingsId);
+                var neededCurrencies = new[] { "UAH", "USD", "EUR", "RUB" };
 
                 var values =
-                    (await ValuesCalculator.GetValuesInRubAndOtherCurrencies(value, currency, data))
-                    .ToDictionary(t => t.Key, t => t.Value);
+                    await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, neededCurrencies);
 
                 var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, percents);
 
                 await client.SendTextMessageAsync(chatSettingsId, textToSend, replyToMessageId: messageId);
-
-                await client.SendTextMessageAsync(chatSettingsId, $"Elapsed: {watch.Elapsed}{nl}" +
-                    $"ElapsedTicks: {watch.ElapsedTicks}{nl}" +
-                    $"ElapsedMs: {watch.ElapsedMilliseconds}");
             }
             else
                 throw new Exception("Problems occured when parsing your message");

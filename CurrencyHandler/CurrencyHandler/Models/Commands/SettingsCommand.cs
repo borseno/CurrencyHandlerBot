@@ -2,6 +2,8 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Contexts;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DbModels;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -22,15 +24,14 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Settings";
 
-        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
-            var ctx = (ChatSettingsContext) db;
             var nl = Environment.NewLine;
 
-            var percents = await Settings.GetPercentsForChat(chatId, ctx);
-            var currency = await Settings.GetCurrencyForChat(chatId, ctx);
+            var percents = await repo.GetPercentsAsync(chatId);
+            var currency = await repo.GetCurrencyAsync(chatId);
 
             var text = $"Settings for this chat: {nl}" +
                        $"Percents: {percents}{nl}" +

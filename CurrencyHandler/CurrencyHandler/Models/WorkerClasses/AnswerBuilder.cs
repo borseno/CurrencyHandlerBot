@@ -19,7 +19,7 @@ namespace CurrencyHandler.Models.WorkerClasses
                 foreach (var key in values.Keys.ToList())
                     values[key] = Math.Round(values[key] * percents / completeValue, points);
 
-                StringBuilder builder = new StringBuilder(128);
+                StringBuilder builder = new StringBuilder(200);
 
                 builder.AppendLine($"Percents to be considered: {percents}");
 

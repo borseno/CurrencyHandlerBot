@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Contexts;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DbModels;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -21,7 +23,7 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Percents";
 
-        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatSettingsId = message.Chat.Id;
@@ -42,7 +44,7 @@ namespace CurrencyHandler.Models.Commands
                 decimal number;
                 if (decimal.TryParse(substring, out number))
                 {
-                    await Settings.SetPercentsForChat(chatSettingsId, number, (ChatSettingsContext)db);
+                    await repo.SetPercentsAsync(number, chatSettingsId);
 
                     var text = "Successfuly set your new percent settings!";
                     await client.SendTextMessageAsync(chatSettingsId, text, replyToMessageId: messageId);

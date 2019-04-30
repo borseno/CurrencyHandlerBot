@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DataCaching;
 using CurrencyHandler.Models.WorkerClasses;
 using Telegram.Bot.Types;
@@ -11,14 +12,21 @@ using Telegram.Bot.Types.InlineQueryResults;
 
 namespace CurrencyHandler.Models.QueryHandling
 {
-    public static class InlineQueryHandler
+    public class InlineQueryHandler
     {
-        private static readonly string[] Currencies =
+        private readonly CurrenciesRepository _repo;
+
+        private readonly string[] Currencies =
         {
             "UAH", "RUB", "EUR", "USD"
         };
 
-        public static async Task Handle(InlineQuery q)
+        public InlineQueryHandler(CurrenciesRepository repo)
+        {
+            _repo = repo;
+        }
+
+        public async Task HandleAsync(InlineQuery q)
         {
             if (String.IsNullOrEmpty(q.Query))
                 return;
@@ -37,7 +45,8 @@ namespace CurrencyHandler.Models.QueryHandling
                     break;
                 }
 
-            var argsPart = currency == null ? "" : $" {currency}";
+            var space = " "; // format: {decimal}{space}{currency} e.g "53.2 UAH" or just {decimal}
+            var argsPart = currency == null ? "" : $"{space}{currency}";
 
             string pattern = $@"[0-9][0-9]*([\.,][0-9][0-9]*)?{argsPart}";
 
@@ -53,32 +62,17 @@ namespace CurrencyHandler.Models.QueryHandling
                         currency = "UAH";
 
                     var values =
-                        (await ValuesCalculator.GetValuesInRubAndOtherCurrencies(value, currency, data))
-                        .ToDictionary(t => t.Key, t => t.Value);
+                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, Currencies);
 
                     var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, 100);
 
-                    await bot.AnswerInlineQueryAsync(q.Id, await GetResult("Result", answer1, answer1));
+                    await bot.AnswerInlineQueryAsync(
+                        q.Id, 
+                        await InlineAnswerBuilder.ArticleToQueryResultAsync(
+                            "Result", answer1, answer1)
+                        );
                 }
             }
-        }
-
-        public static async Task<IEnumerable<InlineQueryResultBase>> GetResult(string id, string title, string text = "")
-        {
-            return await Task.Run(() =>
-            {
-                if (text == null)
-                    text = String.Empty;
-
-                var content = new InputTextMessageContent(text);
-
-                InlineQueryResultBase[] results =
-                {
-                    new InlineQueryResultArticle(id, title, content)
-                };
-
-                return results;
-            });
         }
     }
 }

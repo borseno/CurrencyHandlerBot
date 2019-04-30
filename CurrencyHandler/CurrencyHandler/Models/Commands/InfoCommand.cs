@@ -2,6 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyHandler.Models.Commands
@@ -19,7 +20,7 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Info";
 
-        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatSettingsId = message.Chat.Id;

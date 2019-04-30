@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using IO = System.IO;
@@ -19,7 +20,7 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Start";
 
-        public override async Task Execute(Message message, TelegramBotClient client, DbContext db)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatSettingsId = message.Chat.Id;

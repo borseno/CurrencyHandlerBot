@@ -1,4 +1,5 @@
 ﻿using CurrencyHandler.Models.QueryHandling;
+using CurrencyHandler.Models.WorkerClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace CurrencyHandler.Models.ExceptionsHandling
            
             if (type == UpdateType.InlineQuery)
             {
-                var answer = await InlineQueryHandler.GetResult("Error", exceptionMsg, exceptionMsg);
+                var answer = await InlineAnswerBuilder.ArticleToQueryResultAsync("Error", exceptionMsg, exceptionMsg);
 
                 await bot.AnswerInlineQueryAsync(update.InlineQuery.Id, answer);
             }
