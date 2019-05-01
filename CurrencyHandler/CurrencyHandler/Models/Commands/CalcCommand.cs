@@ -49,13 +49,9 @@ namespace CurrencyHandler.Models.Commands
                 var values =
                     await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, neededCurrencies);
 
-                var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, percents);
+                var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, currency, percents);
 
                 await client.SendTextMessageAsync(chatSettingsId, textToSend, replyToMessageId: messageId);
-
-                await client.SendTextMessageAsync(chatSettingsId, $"{string.Join(", ", neededCurrencies.Select(i => i.Currency).ToArray())}");
-
-                await client.SendTextMessageAsync(chatSettingsId, $"{string.Join(", ", values.Keys.Select(ce => ce.Currency))}");
             }
             else
                 throw new Exception("Problems occured when parsing your message");

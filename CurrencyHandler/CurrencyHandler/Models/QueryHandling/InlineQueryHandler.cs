@@ -65,7 +65,7 @@ namespace CurrencyHandler.Models.QueryHandling
                     var values =
                         await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, CurrenciesEmojis);
 
-                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values);
+                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currency);
 
                     await bot.AnswerInlineQueryAsync(
                         q.Id, 
