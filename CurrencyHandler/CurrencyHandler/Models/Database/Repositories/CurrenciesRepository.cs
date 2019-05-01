@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Contexts;
-using CurrencyHandler.Models.DbModels.Models;
+using CurrencyHandler.Models.Database.Models;
+using CurrencyHandler.Models.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyHandler.Models.Database.Repositories
@@ -11,7 +12,10 @@ namespace CurrencyHandler.Models.Database.Repositories
     public class CurrenciesRepository : IDisposable
     {
         protected const decimal DefaultPercents = 100;
-        protected const string DefaultCurrency = "UAH";
+
+        protected const string DefaultValueCurrency = "UAH";
+
+        protected static string[] DefaultDisplayCurrencies = new string[] { "UAH", "RUB", "EUR", "USD", "BYN" };
 
         protected ChatSettingsContext Context { get; }
 
@@ -35,7 +39,8 @@ namespace CurrencyHandler.Models.Database.Repositories
             {
                 ChatId = chatId,
                 Percents = DefaultPercents,
-                Currency = DefaultCurrency
+                ValueCurrency = DefaultValueCurrency,
+                DisplayCurrencies = DefaultDisplayCurrencies
             };
 
             Context.ChatSettings.Add(entity);
@@ -60,7 +65,8 @@ namespace CurrencyHandler.Models.Database.Repositories
             {
                 ChatId = chatId,
                 Percents = DefaultPercents,
-                Currency = DefaultCurrency
+                ValueCurrency = DefaultValueCurrency,
+                DisplayCurrencies = DefaultDisplayCurrencies
             };
 
             await Context.ChatSettings.AddAsync(entity);
@@ -75,9 +81,9 @@ namespace CurrencyHandler.Models.Database.Repositories
             var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatId);
 
             if (chat == null)
-                return InitChat(chatId).Currency;
+                return InitChat(chatId).ValueCurrency;
 
-            return chat.Currency;
+            return chat.ValueCurrency;
         }
 
         public decimal GetPercents(long chatId)
@@ -98,14 +104,16 @@ namespace CurrencyHandler.Models.Database.Repositories
             {
                 chat = new ChatSettings
                 {
-                    ChatId = chatId, Percents = DefaultPercents, Currency = value
+                    ChatId = chatId,
+                    Percents = DefaultPercents,
+                    ValueCurrency = value
                 };
 
                 AddChat(chat);
             }
             else
             {
-                chat.Currency = value;
+                chat.ValueCurrency = value;
 
                 Context.SaveChanges();
             }
@@ -119,7 +127,9 @@ namespace CurrencyHandler.Models.Database.Repositories
             {
                 chat = new ChatSettings
                 {
-                    ChatId = chatId, Currency = DefaultCurrency, Percents = value
+                    ChatId = chatId,
+                    ValueCurrency = DefaultValueCurrency,
+                    Percents = value
                 };
 
                 AddChat(chat);
@@ -142,14 +152,15 @@ namespace CurrencyHandler.Models.Database.Repositories
                 {
                     ChatId = chatId,
                     Percents = DefaultPercents,
-                    Currency = value
+                    ValueCurrency = value,
+                    DisplayCurrencies = DefaultDisplayCurrencies
                 };
 
                 await AddChatAsync(chat);
             }
             else
             {
-                chat.Currency = value;
+                chat.ValueCurrency = value;
 
                 await Context.SaveChangesAsync();
             }
@@ -165,7 +176,8 @@ namespace CurrencyHandler.Models.Database.Repositories
                 {
                     ChatId = chatId,
                     Percents = value,
-                    Currency = DefaultCurrency
+                    ValueCurrency = DefaultValueCurrency,
+                    DisplayCurrencies = DefaultDisplayCurrencies
                 };
 
                 await AddChatAsync(chat);
@@ -183,9 +195,9 @@ namespace CurrencyHandler.Models.Database.Repositories
             var chat = await Context.ChatSettings.FirstOrDefaultAsync(t => t.ChatId == chatId);
 
             if (chat == null)
-                return (await InitChatAsync(chatId)).Currency;
+                return (await InitChatAsync(chatId)).ValueCurrency;
 
-            return chat.Currency;
+            return chat.ValueCurrency;
         }
 
         public async Task<decimal> GetPercentsAsync(long chatId)
@@ -196,6 +208,77 @@ namespace CurrencyHandler.Models.Database.Repositories
                 return (await InitChatAsync(chatId)).Percents;
 
             return chat.Percents;
+        }
+
+        public string GetCurrencyFromEmoji(string emoji)
+        {
+            return GetCurrencyEmojiFromEmoji(emoji).Currency;
+        }
+
+        public string GetEmojiFromCurrency(string currency)
+        {
+            return GetCurrencyEmojiFromCurrency(currency).Emoji;
+        }
+
+        public CurrencyEmoji GetCurrencyEmojiFromCurrency(string currency)
+        {
+            return Context.CurrencyEmojis.FirstOrDefault(ce => ce.Currency == currency);
+        }
+
+        public CurrencyEmoji GetCurrencyEmojiFromEmoji(string emoji)
+        {
+            return Context.CurrencyEmojis.FirstOrDefault(ce => ce.Emoji == emoji);
+        }
+
+        public async Task<CurrencyEmoji> GetCurrencyEmojiFromCurrencyAsync(string currency)
+        {
+            return await Context.CurrencyEmojis.FirstOrDefaultAsync(ce => ce.Currency == currency);
+        }
+
+        public async Task<CurrencyEmoji> GetCurrencyEmojiFromEmojiAsync(string emoji)
+        {
+            return await Context.CurrencyEmojis.FirstOrDefaultAsync(ce => ce.Emoji == emoji);
+        }
+
+        public async Task<string> GetCurrencyFromEmojiAsync(string emoji)
+        {
+            return (await GetCurrencyEmojiFromEmojiAsync(emoji)).Currency;
+        }
+
+        public async Task<string> GetEmojiFromCurrencyAsync(string currency)
+        {
+            return (await GetCurrencyEmojiFromCurrencyAsync(currency)).Emoji;
+        }
+
+        public async Task SetDisplayCurrenciesAsync(string[] displayCurrencies, long chatId)
+        {
+            var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
+
+            chat.DisplayCurrencies = displayCurrencies;
+
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task AddDisplayCurrenciesAsync(string[] displayCurrencies, long chatId)
+        {
+            var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
+
+            chat.DisplayCurrencies = chat.DisplayCurrencies.Concat(displayCurrencies).ToArray();
+
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task<string[]> GetDisplayCurrenciesAsync(long chatId)
+        {
+            return (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
+        }
+
+        public async Task<CurrencyEmoji[]> GetDisplayCurrenciesEmojisAsync(long chatId)
+        {
+            var displayCurrencies = (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
+            var currenciesEmojis = Context.CurrencyEmojis;
+
+            return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).ToArrayAsync();
         }
 
         public void Dispose()

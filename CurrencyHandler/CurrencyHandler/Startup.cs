@@ -1,7 +1,6 @@
 ﻿using CurrencyHandler.Models;
 using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.DbModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +29,8 @@ namespace CurrencyHandler
                 options => options.UseSqlite(connectionString));
 
             services.AddScoped<CurrenciesRepository>();
+
+            services.AddScoped<CurrenciesEmojisRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

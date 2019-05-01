@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Extensions;
 using MainBankOfRussia.XmlModels;
 
@@ -12,25 +13,38 @@ namespace CurrencyHandler.Models.WorkerClasses
     {
         private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
 
-        public static async Task<Dictionary<string, decimal>> GetCurrenciesValuesAsync(decimal value, string currency, ValCurs data, string[] neededCurrencies)
+        public static async Task<Dictionary<CurrencyEmoji, decimal>> GetCurrenciesValuesAsync(decimal value, string currency, ValCurs data, CurrencyEmoji[] neededCurrencies)
         {
             return await Task.Run(() =>
             {
                 decimal rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
 
-                var result = data?.Valute
-                    .Where(i => i.CharCode.In(neededCurrencies)
-                    ).Select(i =>
+                Dictionary<ValCursValute, CurrencyEmoji> currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Length);
+
+                foreach (var i in data.Valute)
+                {
+                    foreach (var j in neededCurrencies)
+                        if (i.CharCode == j.Currency)
+                            currencies.Add(i, j);
+                }
+
+                var result = currencies.Select(
+                    i =>
                         {
-                            return new KeyValuePair<string, decimal>(
-                                i.CharCode,
-                                rub / (decimal.Parse(i.Value, DecimalFormatInfo) / i.Nominal)
+                            var valute = i.Key;
+                            var currencyEmoji = i.Value;
+
+                            return new KeyValuePair<CurrencyEmoji, decimal>(
+                                currencyEmoji,
+                                rub / (decimal.Parse(valute.Value, DecimalFormatInfo) / valute.Nominal)
                             );
                         }
                     ).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                if (neededCurrencies.Contains("RUB"))
-                    result.Add("RUB", rub);
+                var rubEmoji = neededCurrencies.FirstOrDefault(ce => ce.Currency == "RUB");
+
+                if (rubEmoji != null)
+                    result.Add(rubEmoji, rub);
 
                 return result;
             });

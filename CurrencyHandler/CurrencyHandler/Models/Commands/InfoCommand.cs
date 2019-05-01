@@ -3,7 +3,6 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyHandler.Models.Commands
 {

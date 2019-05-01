@@ -1,17 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.DataCaching;
 using CurrencyHandler.Models.WorkerClasses;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using System.Diagnostics;
-using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.DbModels;
 
 namespace CurrencyHandler.Models.Commands
 {
@@ -50,7 +44,7 @@ namespace CurrencyHandler.Models.Commands
                 var data = await CurrenciesDataCaching.GetValCurs();
                 var percents = await repo.GetPercentsAsync(chatSettingsId);
                 var currency = await repo.GetCurrencyAsync(chatSettingsId);
-                var neededCurrencies = new[] { "UAH", "USD", "EUR", "RUB" };
+                var neededCurrencies = await repo.GetDisplayCurrenciesEmojisAsync(chatSettingsId);
 
                 var values =
                     await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, neededCurrencies);
@@ -58,6 +52,10 @@ namespace CurrencyHandler.Models.Commands
                 var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, percents);
 
                 await client.SendTextMessageAsync(chatSettingsId, textToSend, replyToMessageId: messageId);
+
+                await client.SendTextMessageAsync(chatSettingsId, $"{string.Join(", ", neededCurrencies.Select(i => i.Currency).ToArray())}");
+
+                await client.SendTextMessageAsync(chatSettingsId, $"{string.Join(", ", values.Keys.Select(ce => ce.Currency))}");
             }
             else
                 throw new Exception("Problems occured when parsing your message");

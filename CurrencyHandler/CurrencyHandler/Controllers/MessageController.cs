@@ -1,42 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CurrencyHandler.Models;
-using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.DbModels;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;
 using CurrencyHandler.Models.QueryHandling;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults;
+
 
 namespace CurrencyHandler.Controllers
 {
     [Route("api/message/update")]
     public class MessageController : Controller
     {
-        private static readonly UpdateType[] Types = new UpdateType[]
-            {
-                UpdateType.Message,
-                UpdateType.InlineQuery,
-                UpdateType.CallbackQuery
-            };
+        private static readonly UpdateType[] Types =
+        {
+            UpdateType.Message,
+            UpdateType.InlineQuery,
+            UpdateType.CallbackQuery
+        };
 
         private readonly CallBackMessageHandler _callBackMessageHandler;
         private readonly InlineQueryHandler _inlineQueryHandler;
         private readonly CurrenciesRepository _repo;
 
-        public MessageController(CurrenciesRepository repo)
+        public MessageController(CurrenciesRepository repo, CurrenciesEmojisRepository emojiRepo)
         {
             _callBackMessageHandler = new CallBackMessageHandler(repo);
-            _inlineQueryHandler = new InlineQueryHandler(repo);
-            
+            _inlineQueryHandler = new InlineQueryHandler(emojiRepo);
+
             _repo = repo;
         }
 

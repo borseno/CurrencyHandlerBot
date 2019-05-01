@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.DbModels;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using IO = System.IO;
 
 namespace CurrencyHandler.Models.Commands
 {

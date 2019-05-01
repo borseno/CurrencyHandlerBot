@@ -1,8 +1,5 @@
-﻿using CurrencyHandler.Models.QueryHandling;
-using CurrencyHandler.Models.WorkerClasses;
+﻿using CurrencyHandler.Models.WorkerClasses;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;

@@ -1,11 +1,12 @@
-﻿namespace CurrencyHandler.Models.DbModels.Models
+﻿using System.Collections.Generic;
+
+namespace CurrencyHandler.Models.Database.Models
 {
     public class ChatSettings
     {
-        public int ChatSettingsId { get; set; }
-
-        public long ChatId { get; set; } 
+        public long ChatId { get; set; }
         public decimal Percents { get; set; }
-        public string Currency { get; set; }
+        public string ValueCurrency { get; set; }
+        public string[] DisplayCurrencies { get; set; }
     }
 }

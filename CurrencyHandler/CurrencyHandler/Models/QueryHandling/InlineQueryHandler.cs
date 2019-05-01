@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DataCaching;
 using CurrencyHandler.Models.WorkerClasses;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.InlineQueryResults;
 
 namespace CurrencyHandler.Models.QueryHandling
 {
     public class InlineQueryHandler
     {
-        private readonly CurrenciesRepository _repo;
+        private static CurrencyEmoji[] CurrenciesEmojis;
 
-        private readonly string[] Currencies =
-        {
-            "UAH", "RUB", "EUR", "USD"
-        };
+        private readonly CurrenciesEmojisRepository _repo; 
 
-        public InlineQueryHandler(CurrenciesRepository repo)
+        public InlineQueryHandler(CurrenciesEmojisRepository repo)
         {
             _repo = repo;
+
+            if (CurrenciesEmojis == null)
+            {
+                CurrenciesEmojis = repo.GetCurrencyEmojis();
+            }
         }
 
         public async Task HandleAsync(InlineQuery q)
@@ -38,7 +39,7 @@ namespace CurrencyHandler.Models.QueryHandling
 
             string currency = null;
 
-            foreach (var i in Currencies)
+            foreach (var i in CurrenciesEmojis.Select(ce => ce.Currency))
                 if (input.Contains(i))
                 {
                     currency = i;
@@ -62,9 +63,9 @@ namespace CurrencyHandler.Models.QueryHandling
                         currency = "UAH";
 
                     var values =
-                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, Currencies);
+                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, CurrenciesEmojis);
 
-                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, 100);
+                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values);
 
                     await bot.AnswerInlineQueryAsync(
                         q.Id, 

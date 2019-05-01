@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CurrencyHandler.Models.Database.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace CurrencyHandler.Models.WorkerClasses
 {
     public static class AnswerBuilder
     {
-        public static async Task<string> BuildStringFromValuesAsync(Dictionary<string, decimal> values,
-            decimal percents)
+        public static async Task<string> BuildStringFromValuesAsync(Dictionary<CurrencyEmoji, decimal> values,
+            decimal percents = 100)
         {
             return await Task.Run(() =>
             {
@@ -25,27 +26,10 @@ namespace CurrencyHandler.Models.WorkerClasses
 
                 foreach (var (key, value) in values)
                 {
-                    string emoji;
+                    var emoji = key.Emoji;
+                    var currency = key.Currency;
 
-                    switch (key) // select currency emoji
-                    {
-                        case "RUB":
-                            emoji = "🇷🇺";
-                            break;
-                        case "UAH":
-                            emoji = "🇺🇦";
-                            break;
-                        case "USD":
-                            emoji = "🇺🇸";
-                            break;
-                        case "EUR":
-                            emoji = "🇪🇺";
-                            break;
-                        default:
-                            throw new Exception("Could not find an appropriate emoji for the currency");
-                    }
-
-                    builder.AppendLine($"{emoji} {key}: {value}");
+                    builder.AppendLine($"{emoji} {currency}: {value}");
                 }
 
                 return builder.ToString();

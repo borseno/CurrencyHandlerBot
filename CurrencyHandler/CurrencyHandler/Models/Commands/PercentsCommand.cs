@@ -1,12 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.DbModels;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
