@@ -19,9 +19,12 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         protected ChatSettingsContext Context { get; }
 
+        protected CurrenciesEmojisRepository CurrenciesEmojisRepository { get; }
+
         public CurrenciesRepository(ChatSettingsContext ctx)
         {
             Context = ctx;
+            CurrenciesEmojisRepository = new CurrenciesEmojisRepository(ctx);
         }
 
         protected ChatSettings AddChat(ChatSettings entity)
@@ -280,6 +283,27 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).ToArrayAsync();
         }
+
+        public string[] GetAllCurrencies()
+        {
+            return CurrenciesEmojisRepository.GetCurrencies();
+        }
+
+        public string[] GetAllEmojis()
+        {
+            return CurrenciesEmojisRepository.GetEmojies();
+        }
+
+        public async Task<string[]> GetAllCurrenciesAsync()
+        {
+            return await CurrenciesEmojisRepository.GetCurrenciesAsync();
+        }
+
+        public async Task<string[]> GetAllEmojisAsync()
+        {
+            return await CurrenciesEmojisRepository.GetEmojiesAsync();
+        }
+
 
         public void Dispose()
         {

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CurrencyHandler.Models;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 using CurrencyHandler.Models.QueryHandling;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
@@ -22,13 +24,11 @@ namespace CurrencyHandler.Controllers
             UpdateType.CallbackQuery
         };
 
-        private readonly CallBackMessageHandler _callBackMessageHandler;
         private readonly InlineQueryHandler _inlineQueryHandler;
         private readonly CurrenciesRepository _repo;
 
         public MessageController(CurrenciesRepository repo, CurrenciesEmojisRepository emojiRepo)
         {
-            _callBackMessageHandler = new CallBackMessageHandler(repo);
             _inlineQueryHandler = new InlineQueryHandler(emojiRepo);
 
             _repo = repo;
@@ -53,8 +53,14 @@ namespace CurrencyHandler.Controllers
             {
                 if (update.Type == UpdateType.CallbackQuery)
                 {
-                    await _callBackMessageHandler.Handle(update.CallbackQuery);
-                    return Ok();
+                    foreach (var i in Keyboards.Get(_repo))
+                    {
+                        if (i.Contains(update.CallbackQuery.Data))
+                        {
+                            await i.HandleCallBackAsync(update.CallbackQuery);
+                            return Ok();
+                        }
+                    }
                 }
 
                 if (update.Type == UpdateType.InlineQuery)

@@ -334,3 +334,4 @@ ASALocalRun/
 ## END GENERATED .GITIGNORE ##
 
 AppSettings.cs
+/CurrencyHandler/SplitMethodTest
