@@ -43,13 +43,13 @@ namespace CurrencyHandler.Models.Commands
             {
                 var data = await CurrenciesDataCaching.GetValCurs();
                 var percents = await repo.GetPercentsAsync(chatSettingsId);
-                var currency = await repo.GetCurrencyAsync(chatSettingsId);
-                var neededCurrencies = await repo.GetDisplayCurrenciesEmojisAsync(chatSettingsId);
+                var valueCurrency = await repo.GetCurrencyEmojiAsync(chatSettingsId);
+                var displayCurrencies = await repo.GetDisplayCurrenciesEmojisAsync(chatSettingsId);
 
                 var values =
-                    await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, neededCurrencies);
+                    await ValuesCalculator.GetCurrenciesValuesAsync(value, valueCurrency, data, displayCurrencies);
 
-                var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, currency, percents);
+                var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(values, valueCurrency, percents);
 
                 await client.SendTextMessageAsync(chatSettingsId, textToSend, replyToMessageId: messageId);
             }

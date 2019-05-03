@@ -62,10 +62,12 @@ namespace CurrencyHandler.Models.QueryHandling
                     if (currency == null)
                         currency = "UAH";
 
-                    var values =
-                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currency, data, CurrenciesEmojis);
+                    var currencyEmoji = await _repo.GetCurrencyEmojiFromCurrencyAsync(currency);
 
-                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currency);
+                    var values =
+                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, CurrenciesEmojis);
+
+                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currencyEmoji);
 
                     await bot.AnswerInlineQueryAsync(
                         q.Id, 

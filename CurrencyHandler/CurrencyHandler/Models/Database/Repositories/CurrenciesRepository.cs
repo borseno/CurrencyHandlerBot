@@ -233,6 +233,11 @@ namespace CurrencyHandler.Models.Database.Repositories
             return Context.CurrencyEmojis.FirstOrDefault(ce => ce.Emoji == emoji);
         }
 
+        public CurrencyEmoji GetCurrencyEmoji(long chatId)
+        {
+            return GetCurrencyEmojiFromCurrency(GetCurrency(chatId));
+        }
+
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromCurrencyAsync(string currency)
         {
             return await Context.CurrencyEmojis.FirstOrDefaultAsync(ce => ce.Currency == currency);
@@ -284,6 +289,11 @@ namespace CurrencyHandler.Models.Database.Repositories
             return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).ToArrayAsync();
         }
 
+        public async Task<CurrencyEmoji> GetCurrencyEmojiAsync(long chatId)
+        {
+            return await GetCurrencyEmojiFromCurrencyAsync(await GetCurrencyAsync(chatId));
+        }
+
         public string[] GetAllCurrencies()
         {
             return CurrenciesEmojisRepository.GetCurrencies();
@@ -303,7 +313,6 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             return await CurrenciesEmojisRepository.GetEmojiesAsync();
         }
-
 
         public void Dispose()
         {

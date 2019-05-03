@@ -13,10 +13,12 @@ namespace CurrencyHandler.Models.WorkerClasses
     {
         private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
 
-        public static async Task<Dictionary<CurrencyEmoji, decimal>> GetCurrenciesValuesAsync(decimal value, string currency, ValCurs data, CurrencyEmoji[] neededCurrencies)
+        public static async Task<Dictionary<CurrencyEmoji, decimal>> GetCurrenciesValuesAsync(decimal value, CurrencyEmoji valueCurrencyEmoji, ValCurs data, CurrencyEmoji[] neededCurrencies)
         {
             return await Task.Run(() =>
             {
+                var currency = valueCurrencyEmoji.Currency;
+
                 decimal rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
 
                 Dictionary<ValCursValute, CurrencyEmoji> currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Length);
@@ -45,6 +47,9 @@ namespace CurrencyHandler.Models.WorkerClasses
 
                 if (rubEmoji != null)
                     result.Add(rubEmoji, rub);
+
+                if (!result.TryGetValue(valueCurrencyEmoji, out _))
+                    result.Add(valueCurrencyEmoji, value);
 
                 return result;
             });

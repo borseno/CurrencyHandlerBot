@@ -46,5 +46,25 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             return await Context.CurrencyEmojis.Select(ce => ce.Emoji).ToArrayAsync();
         }
+
+        public async Task<string> GetCurrencyFromEmojiAsync(string emoji)
+        {
+            return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji)).Currency;
+        }
+
+        public async Task<string> GetEmojifromCurrencyAsync(string currency)
+        {
+            return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Currency == currency)).Emoji;
+        }
+
+        public async Task<CurrencyEmoji> GetCurrencyEmojiFromCurrencyAsync(string currency)
+        {
+            return await Context.CurrencyEmojis.FirstAsync(ce => ce.Currency == currency);
+        }
+
+        public async Task<CurrencyEmoji> GetCurrencyEmojiFromEmojiAsync(string emoji)
+        {
+            return await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji);
+        }
     }
 }

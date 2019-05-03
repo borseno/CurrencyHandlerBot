@@ -39,18 +39,15 @@ namespace CurrencyHandler.Models.WorkerClasses
         public static async Task<string> BuildStringFromValuesAsync(Dictionary<CurrencyEmoji, decimal> values, CurrencyEmoji mainValue, 
             decimal percents = 100)
         {
-            return await BuildStringFromValuesAsync(values, mainValue.Currency, percents);
-        }
+            var mainValuePair = values.First(t => t.Key.Currency == mainValue.Currency);
 
-        public static async Task<string> BuildStringFromValuesAsync(Dictionary<CurrencyEmoji, decimal> values, string mainValue,
-    decimal percents = 100)
-        {
-            var mainValue1 = values.First(t => t.Key.Currency == mainValue);
-            var needed = values.Where(t => !t.Equals(mainValue1)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            var needed = values
+                .Where
+                (t => !t.Equals(mainValuePair)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             var str = await BuildStringFromValuesAsync(needed, percents);
 
-            return $"Given value: {mainValue1.Key.Emoji} {mainValue1.Value} {mainValue1.Key.Currency}" +
+            return $"Given value: {mainValuePair.Key.Emoji} {mainValuePair.Value} {mainValuePair.Key.Currency}" +
                 $"{Environment.NewLine}{Environment.NewLine}" + str;
         }
     }
