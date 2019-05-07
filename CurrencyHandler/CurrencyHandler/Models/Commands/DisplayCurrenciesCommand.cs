@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
 using Telegram.Bot;
@@ -13,7 +11,7 @@ namespace CurrencyHandler.Models.Commands
 
     public class DisplayCurrenciesCommand : Command
     {
-        public static DisplayCurrenciesCommand Instance { get; }
+        public static DisplayCurrenciesCommand Instance => throw new NotImplementedException();
 
         public override string Name => throw new NotImplementedException();
 

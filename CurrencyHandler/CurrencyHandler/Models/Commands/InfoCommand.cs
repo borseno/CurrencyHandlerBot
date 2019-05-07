@@ -22,11 +22,11 @@ namespace CurrencyHandler.Models.Commands
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
-            var chatSettingsId = message.Chat.Id;
+            var chatId = message.Chat.Id;
 
             var text = await IO.File.ReadAllTextAsync(InfoTextPath);
 
-            await client.SendTextMessageAsync(chatSettingsId, text, replyToMessageId: messageId);
+            await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
         }
     }
 }

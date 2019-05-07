@@ -1,29 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DataCaching;
-using CurrencyHandler.Models.WorkerClasses;
+using CurrencyHandler.Models.HelperClasses;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.QueryHandling
 {
     public class InlineQueryHandler
     {
-        private static CurrencyEmoji[] CurrenciesEmojis;
+        private static CurrencyEmoji[] currenciesEmojis;
 
-        private readonly CurrenciesEmojisRepository _repo; 
+        private readonly CurrenciesEmojisRepository repo; 
 
         public InlineQueryHandler(CurrenciesEmojisRepository repo)
         {
-            _repo = repo;
+            this.repo = repo;
 
-            if (CurrenciesEmojis == null)
+            if (currenciesEmojis == null)
             {
-                CurrenciesEmojis = repo.GetCurrencyEmojis();
+                currenciesEmojis = repo.GetCurrencyEmojis();
             }
         }
 
@@ -33,13 +32,12 @@ namespace CurrencyHandler.Models.QueryHandling
                 return;
 
             var bot = await Bot.Get();
-
-            var data = await CurrenciesDataCaching.GetValCurs();
+            var data = await CurrenciesDataCaching.GetValCursAsync();
             var input = q.Query;
 
             string currency = null;
 
-            foreach (var i in CurrenciesEmojis.Select(ce => ce.Currency))
+            foreach (var i in currenciesEmojis.Select(ce => ce.Currency))
                 if (input.Contains(i))
                 {
                     currency = i;
@@ -60,12 +58,12 @@ namespace CurrencyHandler.Models.QueryHandling
                 if (isValid)
                 {
                     if (currency == null)
-                        currency = "UAH";
+                        currency = DefaultValues.DefaultValueCurrency;
 
-                    var currencyEmoji = await _repo.GetCurrencyEmojiFromCurrencyAsync(currency);
+                    var currencyEmoji = await repo.GetCurrencyEmojiFromCurrencyAsync(currency);
 
                     var values =
-                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, CurrenciesEmojis);
+                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, currenciesEmojis);
 
                     var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currencyEmoji);
 

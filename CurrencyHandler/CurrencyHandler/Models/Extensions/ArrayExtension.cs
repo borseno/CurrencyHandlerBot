@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CurrencyHandler.Models.Extensions
 {
-    public static class ArrayExtenion
+    public static class ArrayExtension
     {
         /// <summary>
-        /// splits an one-dimensional array into two-dimensional (with rows and columns) 
+        /// splits a one-dimensional array into two-dimensional (with rows and columns) 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="columnsLimit"></param>
+        /// <param name="data">one-dimensional array to be split</param>
+        /// <param name="columnsLimit">max amount of columns</param>
         /// <returns></returns>
         public static T[][] Split<T>(this T[] data, int columnsLimit = 6)
         {

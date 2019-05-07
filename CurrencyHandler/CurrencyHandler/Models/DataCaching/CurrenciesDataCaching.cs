@@ -14,7 +14,7 @@ namespace CurrencyHandler.Models.DataCaching
 
         public static ValCurs Data { get; private set; }
 
-        public static async Task<ValCurs> GetValCurs()
+        public static async Task<ValCurs> GetValCursAsync()
         {
             if (IsCacheNeeded(LastCachedDate, DateTimeZones.NowMoscow, Data))
                 await CacheTodayAsync();
@@ -22,7 +22,14 @@ namespace CurrencyHandler.Models.DataCaching
             return Data;
         }
 
-        public static bool IsCacheNeeded(DateTime lastCache, DateTime dt, object data)
+        /// <summary>
+        /// Indicates whether the given value "data" should be cached at the given dateTime dt, if last caching happened at lastCache
+        /// </summary>
+        /// <param name="lastCache">last caching date</param>
+        /// <param name="dt">given date</param>
+        /// <param name="data">data itself</param>
+        /// <returns></returns>
+        private static bool IsCacheNeeded(DateTime lastCache, DateTime dt, object data)
         {
             if (data == null)
                 return true;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot.Types.InlineQueryResults;
 
-namespace CurrencyHandler.Models.WorkerClasses
+namespace CurrencyHandler.Models.HelperClasses
 {
     public static class InlineAnswerBuilder
     {
@@ -12,7 +12,7 @@ namespace CurrencyHandler.Models.WorkerClasses
             return await Task.Run(() =>
             {
                 if (text == null)
-                    text = String.Empty;
+                    text = string.Empty;
 
                 var content = new InputTextMessageContent(text);
 

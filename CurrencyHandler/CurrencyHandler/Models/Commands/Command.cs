@@ -13,7 +13,7 @@ namespace CurrencyHandler.Models.Commands
 
         /// <summary>
         /// Indicates whether the given command is this command or not.
-        /// <para>The given command should contain both bot's name and command's name.</para>
+        /// <para>The given command should contain both bot name and command name.</para>
         /// </summary>
         /// <param name="command"></param>
         /// <returns>value that indicates whether the command is valid or not</returns>

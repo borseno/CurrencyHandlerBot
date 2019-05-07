@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
@@ -16,6 +15,11 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
                 };
 
             return keyboards;
+        }
+
+        public static InlineKeyboardHandler FirstOrDefault(CurrenciesRepository repo, string name)
+        {
+            return Get(repo).FirstOrDefault(kb => String.Equals(kb.Name, name, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }

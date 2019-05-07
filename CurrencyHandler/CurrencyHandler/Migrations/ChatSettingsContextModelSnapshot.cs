@@ -2,7 +2,6 @@
 using CurrencyHandler.Models.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CurrencyHandler.Migrations
 {

@@ -1,10 +1,9 @@
-﻿using CurrencyHandler.Models.Database.Repositories;
-using System;
+﻿using System;
+using CurrencyHandler.Models.Database.Repositories;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using System.Linq;
 using CurrencyHandler.Models.Extensions;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
@@ -15,22 +14,25 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         protected CurrenciesRepository Repository { get; }
 
-        public InlineKeyboardHandler(CurrenciesRepository repo)
+        protected InlineKeyboardHandler(CurrenciesRepository repo)
         {
             Repository = repo;
         }
 
         public bool Contains(string callBackData)
         {
-            return callBackData.IndexOf(Name) == 0; 
+            const int firstIndex = 0;
+            return callBackData.IndexOf(Name, StringComparison.Ordinal) == firstIndex; 
         }
 
         public abstract void SendKeyboard(Message message, TelegramBotClient client);
 
         public abstract void HandleCallBack(CallbackQuery callbackQuery);
 
+        // ReSharper disable once InconsistentNaming (should be implemented as async)
         public abstract Task SendKeyboardAsync(Message message, TelegramBotClient client);
 
+        // ReSharper disable once InconsistentNaming (should be implemented as async)
         public abstract Task HandleCallBackAsync(CallbackQuery callbackQuery);
 
         protected InlineKeyboardMarkup StringArrayToKeyboard(string[] data)
@@ -40,6 +42,13 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             return new InlineKeyboardMarkup(ToInlineKeyBoardButtons(displayData));            
         }
 
+        /// <summary>
+        /// converts string[][] to InlineKeyboardButton[][]
+        /// <para>specifies CallBackData as the Name of the current keyboard + text of the button</para>
+        /// <para>button's text is taken from the jagged array</para>
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
         protected InlineKeyboardButton[][] ToInlineKeyBoardButtons(string[][] arr)
         {
             var result = new InlineKeyboardButton[arr.Length][];

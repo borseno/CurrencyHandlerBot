@@ -1,22 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Extensions;
+using CurrencyHandler.Models.HelperClasses;
 using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyHandler.Models.Database.Repositories
 {
     public class CurrenciesRepository : IDisposable
     {
-        protected const decimal DefaultPercents = 100;
-
-        protected const string DefaultValueCurrency = "UAH";
-
-        protected static string[] DefaultDisplayCurrencies = new string[] { "UAH", "RUB", "EUR", "USD", "BYN" };
-
         protected ChatSettingsContext Context { get; }
 
         protected CurrenciesEmojisRepository CurrenciesEmojisRepository { get; }
@@ -41,9 +35,9 @@ namespace CurrencyHandler.Models.Database.Repositories
             var entity = new ChatSettings
             {
                 ChatId = chatId,
-                Percents = DefaultPercents,
-                ValueCurrency = DefaultValueCurrency,
-                DisplayCurrencies = DefaultDisplayCurrencies
+                Percents = DefaultValues.DefaultPercents,
+                ValueCurrency = DefaultValues.DefaultValueCurrency,
+                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
             };
 
             Context.ChatSettings.Add(entity);
@@ -67,9 +61,9 @@ namespace CurrencyHandler.Models.Database.Repositories
             var entity = new ChatSettings
             {
                 ChatId = chatId,
-                Percents = DefaultPercents,
-                ValueCurrency = DefaultValueCurrency,
-                DisplayCurrencies = DefaultDisplayCurrencies
+                Percents = DefaultValues.DefaultPercents,
+                ValueCurrency = DefaultValues.DefaultValueCurrency,
+                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
             };
 
             await Context.ChatSettings.AddAsync(entity);
@@ -108,7 +102,6 @@ namespace CurrencyHandler.Models.Database.Repositories
                 chat = new ChatSettings
                 {
                     ChatId = chatId,
-                    Percents = DefaultPercents,
                     ValueCurrency = value
                 };
 
@@ -131,7 +124,6 @@ namespace CurrencyHandler.Models.Database.Repositories
                 chat = new ChatSettings
                 {
                     ChatId = chatId,
-                    ValueCurrency = DefaultValueCurrency,
                     Percents = value
                 };
 
@@ -154,9 +146,7 @@ namespace CurrencyHandler.Models.Database.Repositories
                 chat = new ChatSettings
                 {
                     ChatId = chatId,
-                    Percents = DefaultPercents,
-                    ValueCurrency = value,
-                    DisplayCurrencies = DefaultDisplayCurrencies
+                    ValueCurrency = value
                 };
 
                 await AddChatAsync(chat);
@@ -178,9 +168,7 @@ namespace CurrencyHandler.Models.Database.Repositories
                 chat = new ChatSettings
                 {
                     ChatId = chatId,
-                    Percents = value,
-                    ValueCurrency = DefaultValueCurrency,
-                    DisplayCurrencies = DefaultDisplayCurrencies
+                    Percents = value
                 };
 
                 await AddChatAsync(chat);

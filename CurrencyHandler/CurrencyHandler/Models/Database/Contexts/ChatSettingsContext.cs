@@ -1,13 +1,14 @@
 ﻿using CurrencyHandler.Models.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using CurrencyHandler.Models.HelperClasses;
 
 namespace CurrencyHandler.Models.Database.Contexts
 {
     public class ChatSettingsContext : DbContext
     {
         public DbSet<ChatSettings> ChatSettings { get; set; }
+
         public DbSet<CurrencyEmoji> CurrencyEmojis { get; set; }
 
         public ChatSettingsContext(DbContextOptions options) : base(options)
@@ -19,24 +20,20 @@ namespace CurrencyHandler.Models.Database.Contexts
         {
             base.OnModelCreating(mb);
 
-            mb.Entity<CurrencyEmoji>()
-                .Property(e => e.Emoji)
-                .IsRequired(true);
-
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.DisplayCurrencies)
-                .IsRequired(true);
+                .IsRequired();
 
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.ValueCurrency)
-                .IsRequired(true);
+                .IsRequired();
 
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.Percents)
-                .IsRequired(true);
+                .IsRequired();
 
             mb.Entity<ChatSettings>()
-                .Property(e => e.DisplayCurrencies)
+                .Property(e => e.DisplayCurrencies) // store list of primitives (string)
                 .HasConversion(
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
@@ -54,6 +51,10 @@ namespace CurrencyHandler.Models.Database.Contexts
 
             mb.Entity<CurrencyEmoji>()
                 .HasKey(ce => ce.Currency);
+
+            mb.Entity<CurrencyEmoji>()
+              .Property(e => e.Emoji)
+              .IsRequired();
 
             mb.Entity<CurrencyEmoji>().HasData(
                 new CurrencyEmoji { Currency = "AUD", Emoji = "🇦🇺" },
@@ -76,11 +77,11 @@ namespace CurrencyHandler.Models.Database.Contexts
 
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.ValueCurrency)
-                .HasDefaultValue("UAH");
+                .HasDefaultValue(DefaultValues.DefaultValueCurrency);
 
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.DisplayCurrencies)
-                .HasDefaultValue(new string[] { "UAH", "RUB", "EUR", "USD", "BYN" });
+                .HasDefaultValue(DefaultValues.DefaultDisplayCurrencies);
         }
 
     }

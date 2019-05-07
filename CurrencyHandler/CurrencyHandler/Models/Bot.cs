@@ -8,17 +8,17 @@ namespace CurrencyHandler.Models
 {
     public static class Bot
     {
-        private static TelegramBotClient _client;
-        private static List<Command> _commandList;
+        private static TelegramBotClient client;
+        private static List<Command> commandList;
 
-        public static IReadOnlyList<Command> Commands => _commandList.AsReadOnly();
+        public static IReadOnlyList<Command> Commands => commandList.AsReadOnly();
 
         public static async Task<TelegramBotClient> Get()
         {
-            if (_client != null)
-                return _client;
+            if (client != null)
+                return client;
 
-            _commandList =
+            commandList =
                 new List<Command>
                 {
                     InfoCommand.Instance,
@@ -26,16 +26,16 @@ namespace CurrencyHandler.Models
                     PercentsCommand.Instance,
                     SettingsCommand.Instance,
                     StartCommand.Instance,
-                    CurrencyCommand.Instance
+                    ValueCurrencyCommand.Instance
                 };
 
             var hook = String.Format(AppSettings.Url, "api/message/update");
 
-            _client = new TelegramBotClient(AppSettings.Key);
+            client = new TelegramBotClient(AppSettings.Key);
 
-            await _client.SetWebhookAsync(hook);
+            await client.SetWebhookAsync(hook);
 
-            return _client;
+            return client;
         }
     }
 }
