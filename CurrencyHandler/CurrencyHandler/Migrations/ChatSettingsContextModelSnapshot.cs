@@ -2,6 +2,7 @@
 using CurrencyHandler.Models.Database.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CurrencyHandler.Migrations
 {
@@ -88,7 +89,7 @@ namespace CurrencyHandler.Migrations
                         new
                         {
                             Currency = "CAD",
-                            Emoji = "🇩🇰"
+                            Emoji = "🇨🇦"
                         },
                         new
                         {

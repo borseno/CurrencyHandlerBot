@@ -26,7 +26,8 @@ namespace CurrencyHandler.Models
                     PercentsCommand.Instance,
                     SettingsCommand.Instance,
                     StartCommand.Instance,
-                    ValueCurrencyCommand.Instance
+                    ValueCurrencyCommand.Instance,
+                    DisplayCurrenciesCommand.Instance
                 };
 
             var hook = String.Format(AppSettings.Url, "api/message/update");

@@ -1,4 +1,5 @@
 ﻿using System;
+
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Contexts;
@@ -71,6 +72,68 @@ namespace CurrencyHandler.Models.Database.Repositories
             await Context.SaveChangesAsync();
 
             return entity;
+        }
+
+        // TODO: Optimize
+        internal async Task RemoveDisplayEmojiesAsync(string emoji, long chatID)
+        {
+            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+
+            if (chat == null)
+            {
+                chat = await InitChatAsync(chatID);
+            }
+
+            var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
+
+            var list = chat.DisplayCurrencies.ToList();
+
+            var removed = list.Remove(currency);
+
+            if (!removed)
+                throw new Exception(
+                    $"Attempt to remove {currency} from displayCurrencies. " +
+                    $"{currency} is already not in the list");
+
+            chat.DisplayCurrencies = list.ToArray();
+
+            Context.SaveChanges();
+        }
+
+        // TODO: Optimize
+        internal async Task AddDisplayEmojiesAsync(string emoji, long chatID)
+        {
+            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+
+            if (chat == null)
+            {
+                chat = await InitChatAsync(chatID);
+            }
+
+            var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
+
+            var list = chat.DisplayCurrencies.ToList();
+
+            list.Add(currency);
+
+            chat.DisplayCurrencies = list.ToArray();
+
+            Context.SaveChanges();
+        }
+
+        internal async Task<string[]> GetDisplayEmojisAsync(long chatId)
+        {
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
+
+            if (chat == null)
+            {
+                chat = await InitChatAsync(chatId);
+            }
+
+            var displayCurrencies = chat.DisplayCurrencies;
+            var currenciesEmojis = Context.CurrencyEmojis;
+
+            return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).Select(ce => ce.Emoji).ToArrayAsync();
         }
 
         public string GetCurrency(long chatId)

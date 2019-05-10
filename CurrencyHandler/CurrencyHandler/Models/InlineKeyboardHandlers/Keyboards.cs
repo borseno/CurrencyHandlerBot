@@ -11,7 +11,8 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         {
             var keyboards = new List<InlineKeyboardHandler>
                 {
-                    new ValueCurrencyKeyboardHandler(repo)
+                    new ValueCurrencyKeyboardHandler(repo),
+                    new DisplayCurrenciesKeyboardHandler(repo)
                 };
 
             return keyboards;

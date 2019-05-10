@@ -39,7 +39,9 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         {
             var displayData = data.Split(5);
 
-            return new InlineKeyboardMarkup(ToInlineKeyBoardButtons(displayData));            
+            var buttons = ToInlineKeyBoardButtons(displayData);
+
+            return new InlineKeyboardMarkup(buttons);            
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             return result;
         }
 
-        protected string GetTextFromCallbackData(CallbackQuery data)
+        protected virtual string GetTextFromCallbackData(CallbackQuery data)
         {
             return data.Data.TrimStart(Name.ToCharArray());
         }

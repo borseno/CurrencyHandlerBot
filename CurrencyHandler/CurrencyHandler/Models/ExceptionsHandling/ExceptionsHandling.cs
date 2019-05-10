@@ -20,7 +20,8 @@ namespace CurrencyHandler.Models.ExceptionsHandling
             var exceptionMsg = 
                 $"Exception type: {e.GetType().Name}{NL}" +
                 $"Exception message: {e.Message}{NL}" +
-                $"InnerException: {NL}{e.InnerException}"; 
+                $"InnerException: {NL}{e.InnerException} +{NL}" +
+                $"StackTrace: {NL}{e.StackTrace}"; 
 
             if (type == UpdateType.CallbackQuery)
             {

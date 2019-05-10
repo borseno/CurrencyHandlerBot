@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CurrencyHandler.Migrations
 {
     [DbContext(typeof(ChatSettingsContext))]
-    [Migration("20190501150911_AddCurrencies")]
-    partial class AddCurrencies
+    [Migration("20190509190406_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,7 +91,7 @@ namespace CurrencyHandler.Migrations
                         new
                         {
                             Currency = "CAD",
-                            Emoji = "🇩🇰"
+                            Emoji = "🇨🇦"
                         },
                         new
                         {

@@ -2,7 +2,7 @@
 
 namespace CurrencyHandler.Migrations
 {
-    public partial class AddCurrencies : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,7 +70,7 @@ namespace CurrencyHandler.Migrations
             migrationBuilder.InsertData(
                 table: "CurrencyEmojis",
                 columns: new[] { "Currency", "Emoji" },
-                values: new object[] { "CAD", "🇩🇰" });
+                values: new object[] { "CAD", "🇨🇦" });
 
             migrationBuilder.InsertData(
                 table: "CurrencyEmojis",

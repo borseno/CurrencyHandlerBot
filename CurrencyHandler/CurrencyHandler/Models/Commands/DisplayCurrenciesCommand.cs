@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -11,13 +12,22 @@ namespace CurrencyHandler.Models.Commands
 
     public class DisplayCurrenciesCommand : Command
     {
-        public static DisplayCurrenciesCommand Instance => throw new NotImplementedException();
+        public static DisplayCurrenciesCommand Instance => new DisplayCurrenciesCommand();
 
-        public override string Name => throw new NotImplementedException();
+        public override string Name => "DisplayCurrencies";
 
-        public override Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
+        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
-            throw new NotImplementedException();
+            var keyboard = Keyboards.FirstOrDefault(repo, Name);
+
+            if (keyboard != null)
+            {
+                await keyboard.SendKeyboardAsync(message, client);
+            }
+            else
+            {
+                throw new InvalidOperationException("could not find an appropriate keyboard");
+            }
         }
     }
 }
