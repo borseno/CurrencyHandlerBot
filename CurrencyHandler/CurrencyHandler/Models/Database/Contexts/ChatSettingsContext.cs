@@ -64,7 +64,7 @@ namespace CurrencyHandler.Models.Database.Contexts
                 new CurrencyEmoji { Currency = "EUR", Emoji = "🇪🇺" },
                 new CurrencyEmoji { Currency = "BYN", Emoji = "🇧🇾" },
                 new CurrencyEmoji { Currency = "KZT", Emoji = "🇰🇿" },
-                new CurrencyEmoji { Currency = "CAD", Emoji = "🇩🇰" },
+                new CurrencyEmoji { Currency = "CAD", Emoji = "🇨🇦" },
                 new CurrencyEmoji { Currency = "NOK", Emoji = "🇳🇴" },
                 new CurrencyEmoji { Currency = "SGD", Emoji = "🇸🇬" },
                 new CurrencyEmoji { Currency = "TRY", Emoji = "🇹🇷" },
