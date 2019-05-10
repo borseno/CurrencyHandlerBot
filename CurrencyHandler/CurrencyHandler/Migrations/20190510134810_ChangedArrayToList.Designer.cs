@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CurrencyHandler.Migrations
 {
     [DbContext(typeof(ChatSettingsContext))]
-    [Migration("20190509190406_Initial")]
-    partial class Initial
+    [Migration("20190510134810_ChangedArrayToList")]
+    partial class ChangedArrayToList
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

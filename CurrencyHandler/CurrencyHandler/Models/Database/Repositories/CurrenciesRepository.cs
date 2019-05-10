@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Contexts;
@@ -86,16 +86,14 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
 
-            var list = chat.DisplayCurrencies.ToList();
+            var isRemoved =  chat.DisplayCurrencies.Remove(currency);
 
-            var removed = list.Remove(currency);
-
-            if (!removed)
+            if (!isRemoved)
                 throw new Exception(
                     $"Attempt to remove {currency} from displayCurrencies. " +
                     $"{currency} is already not in the list");
 
-            chat.DisplayCurrencies = list.ToArray();
+            Context.Entry(chat).State = EntityState.Modified;
 
             Context.SaveChanges();
         }
@@ -112,11 +110,9 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
 
-            var list = chat.DisplayCurrencies.ToList();
+            chat.DisplayCurrencies.Add(currency); // don't you EF see it yourself that it's changed?!>!>!>!>?!??
 
-            list.Add(currency);
-
-            chat.DisplayCurrencies = list.ToArray();
+            Context.Entry(chat).State = EntityState.Modified; // not having this line costed me 2 hours
 
             Context.SaveChanges();
         }
@@ -309,30 +305,30 @@ namespace CurrencyHandler.Models.Database.Repositories
             return (await GetCurrencyEmojiFromCurrencyAsync(currency)).Emoji;
         }
 
-        public async Task SetDisplayCurrenciesAsync(string[] displayCurrencies, long chatId)
+        public async Task SetDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
             var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
 
-            chat.DisplayCurrencies = displayCurrencies;
+            chat.DisplayCurrencies = displayCurrencies.ToList();
 
             await Context.SaveChangesAsync();
         }
 
-        public async Task AddDisplayCurrenciesAsync(string[] displayCurrencies, long chatId)
+        public async Task AddRangeDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
             var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
 
-            chat.DisplayCurrencies = chat.DisplayCurrencies.Concat(displayCurrencies).ToArray();
+            chat.DisplayCurrencies.AddRange(displayCurrencies);
 
             await Context.SaveChangesAsync();
         }
 
-        public async Task<string[]> GetDisplayCurrenciesAsync(long chatId)
+        public async Task<IReadOnlyList<string>> GetDisplayCurrenciesAsync(long chatId)
         {
-            return (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
+            return (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies.AsReadOnly();
         }
 
-        public async Task<CurrencyEmoji[]> GetDisplayCurrenciesEmojisAsync(long chatId)
+        public async Task<IReadOnlyList<CurrencyEmoji>> GetDisplayCurrenciesEmojisAsync(long chatId)
         {
             var displayCurrencies = (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
             var currenciesEmojis = Context.CurrencyEmojis;
@@ -345,12 +341,12 @@ namespace CurrencyHandler.Models.Database.Repositories
             return await GetCurrencyEmojiFromCurrencyAsync(await GetCurrencyAsync(chatId));
         }
 
-        public string[] GetAllCurrencies()
+        public IEnumerable<string> GetAllCurrencies()
         {
             return CurrenciesEmojisRepository.GetCurrencies();
         }
 
-        public string[] GetAllEmojis()
+        public IEnumerable<string> GetAllEmojis()
         {
             return CurrenciesEmojisRepository.GetEmojies();
         }

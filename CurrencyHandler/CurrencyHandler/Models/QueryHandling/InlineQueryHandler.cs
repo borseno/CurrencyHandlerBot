@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace CurrencyHandler.Models.QueryHandling
 {
     public class InlineQueryHandler
     {
-        private static CurrencyEmoji[] currenciesEmojis;
+        private static IReadOnlyList<CurrencyEmoji> currenciesEmojis;
 
         private readonly CurrenciesEmojisRepository repo; 
 
@@ -22,7 +23,7 @@ namespace CurrencyHandler.Models.QueryHandling
 
             if (currenciesEmojis == null)
             {
-                currenciesEmojis = repo.GetCurrencyEmojis();
+                currenciesEmojis = repo.GetCurrencyEmojis().ToList().AsReadOnly();
             }
         }
 

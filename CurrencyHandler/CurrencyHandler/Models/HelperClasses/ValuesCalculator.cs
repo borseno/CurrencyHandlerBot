@@ -12,7 +12,7 @@ namespace CurrencyHandler.Models.HelperClasses
     {
         private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
 
-        public static async Task<Dictionary<CurrencyEmoji, decimal>> GetCurrenciesValuesAsync(decimal value, CurrencyEmoji valueCurrencyEmoji, ValCurs data, CurrencyEmoji[] neededCurrencies)
+        public static async Task<Dictionary<CurrencyEmoji, decimal>> GetCurrenciesValuesAsync(decimal value, CurrencyEmoji valueCurrencyEmoji, ValCurs data, IReadOnlyList<CurrencyEmoji> neededCurrencies)
         {
             return await Task.Run(() =>
             {
@@ -20,7 +20,7 @@ namespace CurrencyHandler.Models.HelperClasses
 
                 decimal rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
 
-                Dictionary<ValCursValute, CurrencyEmoji> currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Length);
+                Dictionary<ValCursValute, CurrencyEmoji> currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Count);
 
                 foreach (var i in data.Valute)
                 {

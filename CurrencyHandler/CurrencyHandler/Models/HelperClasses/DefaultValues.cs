@@ -13,7 +13,7 @@ namespace CurrencyHandler.Models.HelperClasses
 
         public const string APICurrency = "RUB";
 
-        public static readonly string[] DefaultDisplayCurrencies =
+        public static readonly List<string> DefaultDisplayCurrencies = new List<string>
         {
             "UAH",
             "RUB",

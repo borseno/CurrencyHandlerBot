@@ -1,4 +1,6 @@
-﻿namespace CurrencyHandler.Models.Database.Models
+﻿using System.Collections.Generic;
+
+namespace CurrencyHandler.Models.Database.Models
 {
     public class ChatSettings
     {
@@ -8,6 +10,6 @@
 
         public string ValueCurrency { get; set; }
 
-        public string[] DisplayCurrencies { get; set; }
+        public List<string> DisplayCurrencies { get; set; }
     }
 }

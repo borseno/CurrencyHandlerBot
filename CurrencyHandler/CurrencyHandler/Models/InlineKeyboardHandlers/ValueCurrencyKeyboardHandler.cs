@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Database.Repositories;
 using Telegram.Bot;
@@ -68,7 +69,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         {
             var chatId = message.Chat.Id;
 
-            var currencies = Repository.GetAllCurrencies();
+            var currencies = Repository.GetAllCurrencies().ToArray();
 
             var keyboard = StringArrayToKeyboard(currencies);
 

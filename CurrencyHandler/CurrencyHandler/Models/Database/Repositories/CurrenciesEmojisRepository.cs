@@ -1,6 +1,7 @@
 ﻿using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,19 +16,19 @@ namespace CurrencyHandler.Models.Database.Repositories
             Context = ctx;
         }
 
-        public CurrencyEmoji[] GetCurrencyEmojis()
+        public IEnumerable<CurrencyEmoji> GetCurrencyEmojis()
         {
-            return Context.CurrencyEmojis.ToArray();
+            return Context.CurrencyEmojis;
         }
 
-        public string[] GetCurrencies()
+        public IEnumerable<string> GetCurrencies()
         {
-            return Context.CurrencyEmojis.Select(ce => ce.Currency).ToArray();
+            return Context.CurrencyEmojis.Select(ce => ce.Currency);
         }
 
-        public string[] GetEmojies()
+        public IEnumerable<string> GetEmojies()
         {
-            return Context.CurrencyEmojis.Select(ce => ce.Emoji).ToArray();
+            return Context.CurrencyEmojis.Select(ce => ce.Emoji);
         }
 
         public async Task<CurrencyEmoji[]> GetCurrencyEmojisAsync()

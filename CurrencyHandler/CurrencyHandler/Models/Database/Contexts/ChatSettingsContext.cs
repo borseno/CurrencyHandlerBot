@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using CurrencyHandler.Models.HelperClasses;
+using System.Linq;
 
 namespace CurrencyHandler.Models.Database.Contexts
 {
@@ -36,7 +37,7 @@ namespace CurrencyHandler.Models.Database.Contexts
                 .Property(e => e.DisplayCurrencies) // store list of primitives (string)
                 .HasConversion(
                 v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
 
             mb.Entity<ChatSettings>()
                 .HasKey(cs => cs.ChatId);
