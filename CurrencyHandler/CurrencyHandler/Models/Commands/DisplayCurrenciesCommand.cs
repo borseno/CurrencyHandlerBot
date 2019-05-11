@@ -7,15 +7,19 @@ using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    // TODO: Let user change currencies to display with checkbox
-    // checkbox is implemented via inlinekeyboard and check symbol on clicking a button.
-
     public class DisplayCurrenciesCommand : Command
     {
         public static DisplayCurrenciesCommand Instance => new DisplayCurrenciesCommand();
 
         public override string Name => "DisplayCurrencies";
 
+        /// <summary>
+        /// Sends DisplayCurrenciesKeyboard to the chat 
+        /// </summary>
+        /// <param name="message">the message a user sent</param>
+        /// <param name="client">Bot instance, needed to answer on the message</param>
+        /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
+        /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var keyboard = Keyboards.FirstOrDefault(repo, Name);

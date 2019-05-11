@@ -1,8 +1,8 @@
 ﻿using CurrencyHandler.Models.Commands;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using static System.String;
 
 namespace CurrencyHandler.Models
 {
@@ -13,7 +13,7 @@ namespace CurrencyHandler.Models
 
         public static IReadOnlyList<Command> Commands => commandList.AsReadOnly();
 
-        public static async Task<TelegramBotClient> Get()
+        public static async Task<TelegramBotClient> GetAsync()
         {
             if (client != null)
                 return client;
@@ -30,7 +30,7 @@ namespace CurrencyHandler.Models
                     DisplayCurrenciesCommand.Instance
                 };
 
-            var hook = String.Format(AppSettings.Url, "api/message/update");
+            var hook = Format(AppSettings.Url, "api/message/update");
 
             client = new TelegramBotClient(AppSettings.Key);
 

@@ -74,17 +74,27 @@ namespace CurrencyHandler.Models.Database.Repositories
             return entity;
         }
 
-        // TODO: Optimize
-        internal async Task RemoveDisplayEmojiesAsync(string emoji, long chatID)
+        internal async Task RemoveDisplayEmojisAsync(string emoji, long chatID)
         {
-            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+            ChatSettings chat;
+            string currency; // ChatSettings store only Currency, so we'll need to get the currency for given emoji
 
-            if (chat == null)
+            chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+
+            if (chat == null) // if null, then init chat and get currency from emoji in parallel
             {
-                chat = await InitChatAsync(chatID);
-            }
+                var chatTask = InitChatAsync(chatID);
+                var currencyTask = Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji);
 
-            var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
+                await Task.WhenAll(chatTask, currencyTask);
+
+                chat = chatTask.Result;
+                currency = currencyTask.Result.Currency;
+            }
+            else // if chat is already initialized, no parallel - only 1 task possible
+            {
+                currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
+            }
 
             var isRemoved =  chat.DisplayCurrencies.Remove(currency);
 
@@ -93,38 +103,44 @@ namespace CurrencyHandler.Models.Database.Repositories
                     $"Attempt to remove {currency} from displayCurrencies. " +
                     $"{currency} is already not in the list");
 
-            Context.Entry(chat).State = EntityState.Modified;
+            Context.Entry(chat).State = EntityState.Modified; // ef doesn't see it itself that it's changed
 
             Context.SaveChanges();
         }
 
-        // TODO: Optimize
-        internal async Task AddDisplayEmojiesAsync(string emoji, long chatID)
+        internal async Task AddDisplayEmojisAsync(string emoji, long chatID)
         {
-            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+            ChatSettings chat;
+            string currency; // ChatSettings store only Currency, so we'll need to get the currency for given emoji
 
-            if (chat == null)
+            chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatID);
+
+            if (chat == null) // if null, then init chat and get currency from emoji in parallel
             {
-                chat = await InitChatAsync(chatID);
+                var chatTask = InitChatAsync(chatID);
+                var currencyTask = Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji);
+
+                await Task.WhenAll(chatTask, currencyTask);
+
+                chat = chatTask.Result;
+                currency = currencyTask.Result.Currency;
+            }
+            else // if chat is already initialized, no parallel - only 1 task possible
+            {
+                currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
             }
 
-            var currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
+            chat.DisplayCurrencies.Add(currency);
 
-            chat.DisplayCurrencies.Add(currency); // don't you EF see it yourself that it's changed?!>!>!>!>?!??
-
-            Context.Entry(chat).State = EntityState.Modified; // not having this line costed me 2 hours
+            Context.Entry(chat).State = EntityState.Modified; // not having this line cost me 2 hours (ef didn't see it as modified)
 
             Context.SaveChanges();
         }
 
         internal async Task<string[]> GetDisplayEmojisAsync(long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
-
-            if (chat == null)
-            {
-                chat = await InitChatAsync(chatId);
-            }
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId) 
+                       ?? await InitChatAsync(chatId);
 
             var displayCurrencies = chat.DisplayCurrencies;
             var currenciesEmojis = Context.CurrencyEmojis;
@@ -136,20 +152,14 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatId);
 
-            if (chat == null)
-                return InitChat(chatId).ValueCurrency;
-
-            return chat.ValueCurrency;
+            return chat == null ? InitChat(chatId).ValueCurrency : chat.ValueCurrency;
         }
 
         public decimal GetPercents(long chatId)
         {
             var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatId);
 
-            if (chat == null)
-                return InitChat(chatId).Percents;
-
-            return chat.Percents;
+            return chat?.Percents ?? InitChat(chatId).Percents;
         }
 
         public void SetCurrency(string value, long chatId)
@@ -244,20 +254,14 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             var chat = await Context.ChatSettings.FirstOrDefaultAsync(t => t.ChatId == chatId);
 
-            if (chat == null)
-                return (await InitChatAsync(chatId)).ValueCurrency;
-
-            return chat.ValueCurrency;
+            return chat == null ? (await InitChatAsync(chatId)).ValueCurrency : chat.ValueCurrency;
         }
 
         public async Task<decimal> GetPercentsAsync(long chatId)
         {
             var chat = await Context.ChatSettings.FirstOrDefaultAsync(t => t.ChatId == chatId);
 
-            if (chat == null)
-                return (await InitChatAsync(chatId)).Percents;
-
-            return chat.Percents;
+            return chat?.Percents ?? (await InitChatAsync(chatId)).Percents;
         }
 
         public string GetCurrencyFromEmoji(string emoji)
@@ -307,8 +311,9 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task SetDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
-            var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
-
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)
+                       ?? new ChatSettings();
+              
             chat.DisplayCurrencies = displayCurrencies.ToList();
 
             await Context.SaveChangesAsync();
@@ -316,21 +321,41 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task AddRangeDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
-            var chat = await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId);
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)
+                       ?? new ChatSettings();
 
-            chat.DisplayCurrencies.AddRange(displayCurrencies);
+            if (chat.DisplayCurrencies == null)
+            {
+                chat.DisplayCurrencies = displayCurrencies.ToList();
+            }
+            else
+            {
+                chat.DisplayCurrencies.AddRange(displayCurrencies);
+            }
 
             await Context.SaveChangesAsync();
         }
 
         public async Task<IReadOnlyList<string>> GetDisplayCurrenciesAsync(long chatId)
         {
-            return (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies.AsReadOnly();
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
+
+            if (chat == null)
+            {
+                chat = new ChatSettings
+                {
+                    DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
+                };
+
+                await AddChatAsync(chat);
+            }
+
+            return chat.DisplayCurrencies.AsReadOnly();
         }
 
         public async Task<IReadOnlyList<CurrencyEmoji>> GetDisplayCurrenciesEmojisAsync(long chatId)
         {
-            var displayCurrencies = (await Context.ChatSettings.FirstAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
+            var displayCurrencies = (await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
             var currenciesEmojis = Context.CurrencyEmojis;
 
             return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).ToArrayAsync();
@@ -348,7 +373,7 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public IEnumerable<string> GetAllEmojis()
         {
-            return CurrenciesEmojisRepository.GetEmojies();
+            return CurrenciesEmojisRepository.GetEmojis();
         }
 
         public async Task<string[]> GetAllCurrenciesAsync()
@@ -358,12 +383,13 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<string[]> GetAllEmojisAsync()
         {
-            return await CurrenciesEmojisRepository.GetEmojiesAsync();
+            return await CurrenciesEmojisRepository.GetEmojisAsync();
         }
 
         public void Dispose()
         {
             Context.Dispose();
+            CurrenciesEmojisRepository.Dispose();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace CurrencyHandler.Models.DataCaching
 {
     public static class CurrenciesDataCaching
     {
+        // Main Bank of Russia's info is normally updated at 14:00 
         private static readonly TimeSpan UpdateTime = new TimeSpan(hours: 14, minutes: 00, seconds: 00);
 
         public static DateTime LastCachedDate { get; private set; }
@@ -38,14 +39,14 @@ namespace CurrencyHandler.Models.DataCaching
             {
                 return lastCache.TimeOfDay < UpdateTime && dt.TimeOfDay >= UpdateTime;
             }
-            if (lastCache.Date == dt.Date.AddDays(-1)) // previous day
+            if (lastCache.Date == dt.Date.AddDays(value: -1)) // previous day
             {
                 if (lastCache.TimeOfDay < UpdateTime)
                     return true;
                 if (dt.TimeOfDay >= UpdateTime)
                     return true;
             }
-            else if (lastCache.Date < dt.Date.AddDays(-1)) // earlier than previous day
+            else if (lastCache.Date < dt.Date.AddDays(value: -1)) // earlier than previous day
             {
                 return true;
             }

@@ -17,13 +17,15 @@ namespace CurrencyHandler.Models.Commands
 
         }
 
+        // TODO: 1. Add DisplayCurrencies to settings output
+        // TODO: 2. Add emojis to currencies
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
             var nl = Environment.NewLine; // just a shortcut
 
-            var percentsTask = repo.GetPercentsAsync(chatId);
+            var percentsTask = repo.GetPercentsAsync(chatId); 
             var currencyTask = repo.GetCurrencyAsync(chatId);
 
             // execute them in parallel

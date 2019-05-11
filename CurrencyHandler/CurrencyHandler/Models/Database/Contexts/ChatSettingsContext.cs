@@ -46,10 +46,6 @@ namespace CurrencyHandler.Models.Database.Contexts
                 .Property(cs => cs.ChatId)
                 .ValueGeneratedNever(); // disable increment
 
-            mb.Entity<ChatSettings>()
-                .Property(cs => cs.Percents)
-                .HasDefaultValue(100);
-
             mb.Entity<CurrencyEmoji>()
                 .HasKey(ce => ce.Currency);
 
@@ -75,6 +71,10 @@ namespace CurrencyHandler.Models.Database.Contexts
                 new CurrencyEmoji { Currency = "JPY", Emoji = "🇯🇵" },
                 new CurrencyEmoji { Currency = "RUB", Emoji = "🇷🇺" }
             );
+
+            mb.Entity<ChatSettings>()
+                .Property(cs => cs.Percents)
+                .HasDefaultValue(DefaultValues.DefaultPercents);
 
             mb.Entity<ChatSettings>()
                 .Property(cs => cs.ValueCurrency)

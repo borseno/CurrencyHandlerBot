@@ -28,6 +28,14 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Calc";
 
+        /// <summary>
+        /// Executes the "Calc" command, which is the main command of the app.
+        /// It converts ValueCurrency to DisplayCurrencies and prints the results out. 
+        /// </summary>
+        /// <param name="message">the message a user sent</param>
+        /// <param name="client">Bot instance, needed to answer on the message</param>
+        /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
+        /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageText = message?.Text;
@@ -35,41 +43,44 @@ namespace CurrencyHandler.Models.Commands
             if (messageText == null)
                 return;
 
-            var messageId = message.MessageId;
-            var chatId = message.Chat.Id;
             var content = messageText
-                .TrimStart(charsToIgnore)
-                .Replace(',', '.');
+                .TrimStart(charsToIgnore) // "/calc" <- remove that if exists
+                .Replace(',', '.'); // can process both , and . in the number
 
-            if (decimal.TryParse(content, out var value))
-            {
-                var dataTask = CurrenciesDataCaching.GetValCursAsync();
-                var percentsTask = repo.GetPercentsAsync(chatId);
-                var valueCurrencyTask = repo.GetCurrencyEmojiAsync(chatId);
-                var displayCurrenciesTask = repo.GetDisplayCurrenciesEmojisAsync(chatId);
-
-                // execute them all in parallel and wait for the completion
-                await Task.WhenAll(dataTask, percentsTask, displayCurrenciesTask, valueCurrencyTask);
-
-                var values =
-                    await ValuesCalculator.GetCurrenciesValuesAsync(
-                        value, 
-                        valueCurrencyTask.Result, 
-                        dataTask.Result, 
-                        displayCurrenciesTask.Result);
-
-                var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(
-                    values, valueCurrencyTask.Result, percentsTask.Result);
-
-                await client.SendTextMessageAsync(chatId, textToSend, replyToMessageId: messageId);
-            }
-            else
+            if (!decimal.TryParse(content, out var value))
             {
                 throw new Exception("Problems occured when parsing your message");
             }
-        }
 
-        // messages that only contain digits can be processed too.
+            var messageId = message.MessageId;
+            var chatId = message.Chat.Id;
+            var dataTask = CurrenciesDataCaching.GetValCursAsync();
+            var percentsTask = repo.GetPercentsAsync(chatId);
+            var valueCurrencyTask = repo.GetCurrencyEmojiAsync(chatId);
+            var displayCurrenciesTask = repo.GetDisplayCurrenciesEmojisAsync(chatId);
+
+            // execute them all in parallel and wait for the completion
+            await Task.WhenAll(dataTask, percentsTask, displayCurrenciesTask, valueCurrencyTask);
+
+            var values =
+                await ValuesCalculator.GetCurrenciesValuesAsync(
+                    value,
+                    valueCurrencyTask.Result,
+                    dataTask.Result,
+                    displayCurrenciesTask.Result);
+
+            var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(
+                values, valueCurrencyTask.Result, percentsTask.Result);
+
+            await client.SendTextMessageAsync(chatId, textToSend, replyToMessageId: messageId);
+        }
+        
+        /// <inheritdoc />
+        /// <summary>
+        /// overrides Command's Contains method, allowing to pass just a number
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public override bool Contains(string command)
         {
             if (command == null)

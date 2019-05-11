@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using static System.IO.File;
 
 namespace CurrencyHandler.Models.Commands
 {
@@ -19,12 +20,19 @@ namespace CurrencyHandler.Models.Commands
 
         public override string Name => "Info";
 
+        /// <summary>
+        /// Sends Info.txt content to the chat 
+        /// </summary>
+        /// <param name="message">the message a user sent</param>
+        /// <param name="client">Bot instance, needed to answer on the message</param>
+        /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
+        /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
 
-            var text = await IO.File.ReadAllTextAsync(InfoTextPath);
+            var text = await ReadAllTextAsync(InfoTextPath);
 
             await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
         }

@@ -18,41 +18,50 @@ namespace CurrencyHandler.Models.Commands
 
         }
 
+        /// <summary>
+        /// Handles percents settings change for the chat 
+        /// </summary>
+        /// <param name="message">the message a user sent</param>
+        /// <param name="client">Bot instance, needed to answer on the message</param>
+        /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
+        /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
         {
-            var messageId = message.MessageId;
-            var chatId = message.Chat.Id;
-            var messageText = message.Text;
-
             const string pattern = @"\/percents \-{0,1}\d+(.\d+){0,1}";
-            const string firstNums = "123456789"; // TODO: Fix wrong constraint (can't have 0 as the first digit)
-            const string lastNums = "0123456789";
+            const string numbers = "0123456789";
+
+            var messageText = message.Text;
 
             if (!Regex.IsMatch(messageText, pattern))
             {
-                var errorMsg = "<<< /percents n% >>> pattern matching failed for unknown reason";
+                var errorMsg = "<<< /percents n >>> pattern matching failed for unknown reason";
                 throw new Exception(errorMsg);
             }
 
             // get substring containing decimal value
-            int firstNumIndex = messageText.IndexOfAny(firstNums.ToCharArray());
-            int lastNumIndex = messageText.LastIndexOfAny(lastNums.ToCharArray());
-            int length = lastNumIndex - firstNumIndex + 1;
-            var substring = messageText.Substring(firstNumIndex, length);
+            var firstNumIndex = messageText.IndexOfAny(numbers.ToCharArray());
+            var lastNumIndex = messageText.LastIndexOfAny(numbers.ToCharArray());
+            var length = lastNumIndex - firstNumIndex + 1;
+            var substring = messageText
+                .Substring(firstNumIndex, length)
+                .Replace(',', '.'); // can process both , and . in the number;
 
-            // convert it to decimal and process
-            if (decimal.TryParse(substring, out var number))
+            // convert it to decimal and if unsuccessful, return
+            if (!decimal.TryParse(substring, out var number))
             {
-                await repo.SetPercentsAsync(number, chatId);
-
-                var text = "Successfuly set your new percent settings!";
-                await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
-            }
-            else 
-            {
-                var errorMsg = $"<<< /percents n% >>> pattern matching failed on n = {substring} value";
+                var errorMsg = $"<<< /percents n >>> pattern matching failed on n = {substring} value";
                 throw new Exception(errorMsg);
             }
+
+            // else, do the processing
+            var messageId = message.MessageId;
+            var chatId = message.Chat.Id;
+            var text = "Successfuly set your new percent settings!";
+
+            await repo.SetPercentsAsync(number, chatId);
+
+            await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
+
         }
     }
 }

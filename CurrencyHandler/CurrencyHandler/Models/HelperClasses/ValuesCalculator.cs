@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using MainBankOfRussia.XmlModels;
 
 namespace CurrencyHandler.Models.HelperClasses
 {
+    // TODO: change return type to IEnumerable<KeyValuePair<>> everywhere
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     public static class ValuesCalculator
     {
         private static readonly NumberFormatInfo DecimalFormatInfo = new NumberFormatInfo { NumberDecimalSeparator = "," };
@@ -18,9 +21,9 @@ namespace CurrencyHandler.Models.HelperClasses
             {
                 var currency = valueCurrencyEmoji.Currency;
 
-                decimal rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
+                var rub = ConvertToRub(value, currency, data); // whatever currency the value is, it is processed as rub            
 
-                Dictionary<ValCursValute, CurrencyEmoji> currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Count);
+                var currencies = new Dictionary<ValCursValute, CurrencyEmoji>(neededCurrencies.Count);
 
                 foreach (var i in data.Valute)
                 {
@@ -32,8 +35,7 @@ namespace CurrencyHandler.Models.HelperClasses
                 var result = currencies.Select(
                     i =>
                         {
-                            var valute = i.Key;
-                            var currencyEmoji = i.Value;
+                            var (valute, currencyEmoji) = i;
 
                             return new KeyValuePair<CurrencyEmoji, decimal>(
                                 currencyEmoji,
@@ -59,13 +61,11 @@ namespace CurrencyHandler.Models.HelperClasses
             if (currency == DefaultValues.APICurrency)
                 return value;
 
-            // how many rubles one value of this currency contains (e.g one dollar - 20 rubles, oneInRub = 20)
-            decimal oneInRub;
-
             // asked currency info
             var instance = data.Valute.First(v => v.CharCode == currency);
-
-            oneInRub = Decimal.Parse(instance.Value, DecimalFormatInfo) / instance.Nominal;
+            
+            // how many rubles one value of this currency contains (e.g one dollar - 20 rubles, oneInRub = 20)
+            var oneInRub = Decimal.Parse(instance.Value, DecimalFormatInfo) / instance.Nominal;
 
             // 5 dollars, oneDollarInRub = 20, return 20 * 5 = 100 rubs
             return oneInRub * value;

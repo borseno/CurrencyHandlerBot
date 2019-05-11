@@ -56,7 +56,7 @@ namespace CurrencyHandler
             });
 
             //Bot Configurations
-            Bot.Get().GetAwaiter().GetResult();
+            Bot.GetAsync().GetAwaiter().GetResult();
         }
     }
 }

@@ -35,6 +35,12 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         // ReSharper disable once InconsistentNaming (should be implemented as async)
         public abstract Task HandleCallBackAsync(CallbackQuery callbackQuery);
 
+        /// <summary>
+        /// splits string[] into string[][], then converts string[][] to button[][],
+        /// then creates inlineKeyboard out of those buttons.
+        /// </summary>
+        /// <param name="data">content for buttons</param>
+        /// <returns></returns>
         protected InlineKeyboardMarkup StringArrayToKeyboard(string[] data)
         {
             var displayData = data.Split(5);
@@ -55,14 +61,14 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         {
             var result = new InlineKeyboardButton[arr.Length][];
 
-            for (int i = 0; i < result.Length; i++)
+            for (var i = 0; i < result.Length; i++)
             {
                 result[i] = new InlineKeyboardButton[arr[i].Length];
             }
 
-            for (int i = 0; i < arr.Length; i++)
+            for (var i = 0; i < arr.Length; i++)
             {
-                for (int j = 0; j < arr[i].Length; j++)
+                for (var j = 0; j < arr[i].Length; j++)
                 {
                     result[i][j] = new InlineKeyboardButton
                     {

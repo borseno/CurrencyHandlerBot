@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,14 +7,15 @@ using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.DataCaching;
 using CurrencyHandler.Models.HelperClasses;
 using Telegram.Bot.Types;
+using static System.String;
 
 namespace CurrencyHandler.Models.QueryHandling
 {
     public class InlineQueryHandler
     {
-        private static IReadOnlyList<CurrencyEmoji> currenciesEmojis;
+        private readonly IReadOnlyList<CurrencyEmoji> currenciesEmojis;
 
-        private readonly CurrenciesEmojisRepository repo; 
+        private readonly CurrenciesEmojisRepository repo;
 
         public InlineQueryHandler(CurrenciesEmojisRepository repo)
         {
@@ -29,51 +29,59 @@ namespace CurrencyHandler.Models.QueryHandling
 
         public async Task HandleAsync(InlineQuery q)
         {
-            if (String.IsNullOrEmpty(q.Query))
+            if (IsNullOrEmpty(q.Query))
                 return;
 
-            var bot = await Bot.Get();
+            var bot = await Bot.GetAsync();
             var data = await CurrenciesDataCaching.GetValCursAsync();
             var input = q.Query;
 
             string currency = null;
-
-            foreach (var i in currenciesEmojis.Select(ce => ce.Currency))
-                if (input.Contains(i))
+            foreach (var i in currenciesEmojis)
+                if (input.Contains(i.Currency))
                 {
-                    currency = i;
+                    currency = i.Currency;
                     break;
                 }
 
             var space = " "; // format: {decimal}{space}{currency} e.g "53.2 UAH" or just {decimal}
             var argsPart = currency == null ? "" : $"{space}{currency}";
 
-            string pattern = $@"[0-9][0-9]*([\.,][0-9][0-9]*)?{argsPart}";
+            var pattern = $@"[0-9][0-9]*([\.,][0-9][0-9]*)?{argsPart}";
 
-            if (Regex.IsMatch(input, pattern))
+            if (!Regex.IsMatch(input, pattern))
             {
-                var valueToParse = String.IsNullOrEmpty(argsPart) ? input : input.Replace(argsPart, "");
+                var text = "format: {decimal}{space}{currency} e.g \"53.2 UAH\" or just {decimal} e.g \"53.2\"";
 
-                var isValid = decimal.TryParse(valueToParse, out var value);
+                await bot.AnswerInlineQueryAsync(
+                    q.Id,
+                    await InlineAnswerBuilder.ArticleToQueryResultAsync(
+                        "Result", text, text)
+                );
 
-                if (isValid)
-                {
-                    if (currency == null)
-                        currency = DefaultValues.DefaultValueCurrency;
+                return;
+            }
 
-                    var currencyEmoji = await repo.GetCurrencyEmojiFromCurrencyAsync(currency);
+            var valueToParse = IsNullOrEmpty(argsPart) ? input : input.Replace(argsPart, "");
+            var isValid = decimal.TryParse(valueToParse, out var value);
 
-                    var values =
-                        await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, currenciesEmojis);
+            if (isValid)
+            {
+                if (currency == null)
+                    currency = DefaultValues.DefaultValueCurrency;
 
-                    var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currencyEmoji);
+                var currencyEmoji = await repo.GetCurrencyEmojiFromCurrencyAsync(currency);
 
-                    await bot.AnswerInlineQueryAsync(
-                        q.Id, 
-                        await InlineAnswerBuilder.ArticleToQueryResultAsync(
-                            "Result", answer1, answer1)
-                        );
-                }
+                var values =
+                    await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, currenciesEmojis);
+
+                var answer1 = await AnswerBuilder.BuildStringFromValuesAsync(values, currencyEmoji);
+
+                await bot.AnswerInlineQueryAsync(
+                    q.Id,
+                    await InlineAnswerBuilder.ArticleToQueryResultAsync(
+                        "Result", answer1, answer1)
+                );
             }
         }
     }

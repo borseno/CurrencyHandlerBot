@@ -17,7 +17,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         public override void HandleCallBack(CallbackQuery callbackQuery)
         {
-            var bot = Bot.Get().GetAwaiter().GetResult();
+            var bot = Bot.GetAsync().GetAwaiter().GetResult();
             var buttonText = GetTextFromCallbackData(callbackQuery);
             var currencyEmoji = Repository.GetCurrencyEmojiFromEmoji(buttonText);
 
@@ -42,7 +42,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         public override async Task HandleCallBackAsync(CallbackQuery callbackQuery)
         {
-            var bot = await Bot.Get();
+            var bot = await Bot.GetAsync();
             var buttonText = GetTextFromCallbackData(callbackQuery);
             var currencyEmoji = await Repository.GetCurrencyEmojiFromEmojiAsync(buttonText);
 

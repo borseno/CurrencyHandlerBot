@@ -11,7 +11,6 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
     public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler
     {
-        private const string UnchosenText = "     ";
         private const string ChosenText = " ✅";
 
         public override string Name => "DisplayCurrencies";
@@ -27,7 +26,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         public override async Task HandleCallBackAsync(CallbackQuery callbackQuery)
         {
-            var bot = await Bot.Get();
+            var bot = await Bot.GetAsync();
 
             var chatID = callbackQuery.Message.Chat.Id;
             var msgID = callbackQuery.Message.MessageId;
@@ -36,7 +35,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             var chatId = callbackQuery.Message.Chat.Id;
             var buttonCurrencyEmoji = buttonContent.TrimEnd(ChosenText.ToCharArray());
 
-            string answer = null;
+            string answer;
             if (buttonContent.Contains(ChosenText))
             {
                 await ProcessRemoveAsync(buttonCurrencyEmoji, chatId);
@@ -55,12 +54,12 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         private async Task ProcessAddAsync(string emoji, long chatID)
         {
-            await Repository.AddDisplayEmojiesAsync(emoji, chatID);
+            await Repository.AddDisplayEmojisAsync(emoji, chatID);
         }
 
         private async Task ProcessRemoveAsync(string emoji, long chatID)
         {
-            await Repository.RemoveDisplayEmojiesAsync(emoji, chatID);
+            await Repository.RemoveDisplayEmojisAsync(emoji, chatID);
         }
 
         public override void SendKeyboard(Message message, TelegramBotClient client)
@@ -90,21 +89,15 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
             foreach (var row in buttons)
             {
-                var length = row.Count();
-
-                for (int i = 0; i < length; i++)
+                foreach (var current in row)
                 {
-                    var current = row.ElementAt(i);
+                    // if this emoji is not chosen, then don't highlight it
+                    if (chosenEmojis.FirstOrDefault(emoji => current.Text.Contains(emoji)) == null)
+                        continue;
 
-                    if (chosenEmojis.FirstOrDefault(emoji => current.Text.Contains(emoji)) != null)
-                    {
-                        current.CallbackData += ChosenText;
-                        current.Text += ChosenText;
-                    }
-                    else
-                    {
-                        current.Text += UnchosenText;
-                    }
+                    // else - highlight it
+                    current.CallbackData += ChosenText;
+                    current.Text += ChosenText;
                 }
             }
 
@@ -113,7 +106,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         private async Task UpdateKeyboardAsync(long chatID, int messageID)
         {
-            var botTask = Bot.Get();
+            var botTask = Bot.GetAsync();
             var keyboardTask = GetHighlightedKeyboardAsync(chatID);
 
             await Task.WhenAll(botTask, keyboardTask);

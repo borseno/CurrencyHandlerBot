@@ -69,7 +69,7 @@ namespace CurrencyHandler.Controllers
                 }
 
                 var commands = Bot.Commands;
-                var botClient = await Bot.Get();
+                var botClient = await Bot.GetAsync();
                 var message = update.Message;
 
                 if (message == null || String.IsNullOrEmpty(message.Text))

@@ -10,12 +10,12 @@ namespace CurrencyHandler.Models.HelperClasses
     public static class AnswerBuilder
     {
         public static async Task<string> BuildStringFromValuesAsync(Dictionary<CurrencyEmoji, decimal> values,
-            decimal percents = 100)
+            decimal percents = DefaultValues.DefaultPercents)
         {
             return await Task.Run(() =>
             {
                 const int points = 2;
-                const int completeValue = 100;
+                const int completeValue = 100; // 100%
 
                 foreach (var key in values.Keys.ToList())
                     values[key] = Math.Round(values[key] * percents / completeValue, points);
@@ -37,13 +37,15 @@ namespace CurrencyHandler.Models.HelperClasses
         }
 
         public static async Task<string> BuildStringFromValuesAsync(Dictionary<CurrencyEmoji, decimal> values, CurrencyEmoji mainValue, 
-            decimal percents = 100)
+            decimal percents = DefaultValues.DefaultPercents)
         {
             var mainValuePair = values.First(t => t.Key.Currency == mainValue.Currency);
 
-            var needed = values
-                .Where
-                (t => !t.Equals(mainValuePair)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            // if percents are default (100), then don't also print the value currency, else - print it.
+            var needed = percents == DefaultValues.DefaultPercents
+                ? values.Where
+                    (t => !t.Equals(mainValuePair)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                : values;
 
             var str = await BuildStringFromValuesAsync(needed, percents);
 

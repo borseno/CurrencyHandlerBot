@@ -15,30 +15,33 @@ namespace CurrencyHandler.Models.ExceptionsHandling
 
         public static async Task HandleExceptionAsync(Exception e, Update update, UpdateType type)
         {
-            var bot = await Bot.Get();
+            var bot = await Bot.GetAsync();
 
-            var exceptionMsg = 
+            var exceptionMsg =
                 $"Exception type: {e.GetType().Name}{NL}" +
                 $"Exception message: {e.Message}{NL}" +
-                $"InnerException: {NL}{e.InnerException} +{NL}" +
-                $"StackTrace: {NL}{e.StackTrace}"; 
+                $"InnerException: {NL}{e.InnerException}";
 
-            if (type == UpdateType.CallbackQuery)
+            switch (type)
             {
-                await bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, exceptionMsg);
-                await bot.SendTextMessageAsync(update.CallbackQuery.From.Id, exceptionMsg);
-            }
-           
-            if (type == UpdateType.InlineQuery)
-            {
-                var answer = await InlineAnswerBuilder.ArticleToQueryResultAsync("Error", exceptionMsg, exceptionMsg);
+                case UpdateType.CallbackQuery:
+                {
+                    var callbackTask = bot.AnswerCallbackQueryAsync(update.CallbackQuery.Id, exceptionMsg);
+                    var textTask = bot.SendTextMessageAsync(update.CallbackQuery.From.Id, exceptionMsg);
 
-                await bot.AnswerInlineQueryAsync(update.InlineQuery.Id, answer);
-            }
+                    await Task.WhenAll(callbackTask, textTask);
+                    break;
+                }
+                case UpdateType.InlineQuery:
+                {
+                    var answer = await InlineAnswerBuilder.ArticleToQueryResultAsync("Error", exceptionMsg, exceptionMsg);
 
-            if (type == UpdateType.Message)
-            {
-                await bot.SendTextMessageAsync(update.Message.Chat.Id, exceptionMsg);
+                    await bot.AnswerInlineQueryAsync(update.InlineQuery.Id, answer);
+                    break;
+                }
+                case UpdateType.Message:
+                    await bot.SendTextMessageAsync(update.Message.Chat.Id, exceptionMsg);
+                    break;
             }
         }
     }

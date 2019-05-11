@@ -1,4 +1,5 @@
-﻿using CurrencyHandler.Models.Database.Contexts;
+﻿using System;
+using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CurrencyHandler.Models.Database.Repositories
 {
-    public class CurrenciesEmojisRepository
+    public class CurrenciesEmojisRepository : IDisposable
     {
         protected ChatSettingsContext Context { get; }
 
@@ -26,7 +27,7 @@ namespace CurrencyHandler.Models.Database.Repositories
             return Context.CurrencyEmojis.Select(ce => ce.Currency);
         }
 
-        public IEnumerable<string> GetEmojies()
+        public IEnumerable<string> GetEmojis()
         {
             return Context.CurrencyEmojis.Select(ce => ce.Emoji);
         }
@@ -41,7 +42,7 @@ namespace CurrencyHandler.Models.Database.Repositories
             return await Context.CurrencyEmojis.Select(ce => ce.Currency).ToArrayAsync();
         }
 
-        public async Task<string[]> GetEmojiesAsync()
+        public async Task<string[]> GetEmojisAsync()
         {
             return await Context.CurrencyEmojis.Select(ce => ce.Emoji).ToArrayAsync();
         }
@@ -51,7 +52,7 @@ namespace CurrencyHandler.Models.Database.Repositories
             return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji)).Currency;
         }
 
-        public async Task<string> GetEmojifromCurrencyAsync(string currency)
+        public async Task<string> GetEmojiFromCurrencyAsync(string currency)
         {
             return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Currency == currency)).Emoji;
         }
@@ -64,6 +65,11 @@ namespace CurrencyHandler.Models.Database.Repositories
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromEmojiAsync(string emoji)
         {
             return await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji);
+        }
+
+        public void Dispose()
+        {
+            Context.Dispose();
         }
     }
 }

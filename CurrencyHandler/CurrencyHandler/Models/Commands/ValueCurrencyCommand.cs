@@ -22,14 +22,12 @@ namespace CurrencyHandler.Models.Commands
         {
             var keyboard = Keyboards.FirstOrDefault(repo, Name);
 
-            if (keyboard != null)
-            {
-                await keyboard.SendKeyboardAsync(message, client);
-            }
-            else
+            if (keyboard == null)
             {
                 throw new InvalidOperationException("could not find an appropriate keyboard");
             }
+
+            await keyboard.SendKeyboardAsync(message, client);
         }
     }
 }

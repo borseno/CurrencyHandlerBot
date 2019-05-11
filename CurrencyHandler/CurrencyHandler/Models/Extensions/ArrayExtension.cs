@@ -31,13 +31,13 @@ namespace CurrencyHandler.Models.Extensions
 
             var result = new T[columns][];
 
-            int current = 0;
+            var current = 0;
 
-            for (int i = 0; i < result.Length - 1; i++)
+            for (var i = 0; i < result.Length - 1; i++)
             {
                 result[i] = new T[rows];
 
-                for (int j = 0; j < result[i].Length; j++)
+                for (var j = 0; j < result[i].Length; j++)
                 {
                     result[i][j] = data[current];
                     current++;
@@ -48,7 +48,7 @@ namespace CurrencyHandler.Models.Extensions
 
             result[lastIndex] = new T[lastRow];
 
-            for (int j = 0; j < result[lastIndex].Length; j++)
+            for (var j = 0; j < result[lastIndex].Length; j++)
             {
                 result[lastIndex][j] = data[current];
                 current++;
