@@ -23,10 +23,10 @@ namespace CurrencyHandler
         {
             services.AddMvc();
 
-            var connectionString = Configuration.GetConnectionString("SettingsDBSqlite");
+            var connectionString = Configuration.GetConnectionString("SettingsDBSqlServer");
 
             services.AddDbContext<ChatSettingsContext>(
-                options => options.UseSqlite(connectionString));
+                options => options.UseSqlServer(connectionString));
 
             services.AddScoped<CurrenciesRepository>();
 
