@@ -2,7 +2,7 @@ namespace CurrencyHandler.Models
 {
     public static class AppSettings
     {
-        public const string Url = "https://currencyhandler-sqlite.azurewebsites.net:443/{0}"; // 443 is one of the ports for web hook!
+        public const string Url = "https://currencybotb.herokuapp.com:443/{0}"; // 443 is one of the ports for web hook!
 
         public const string Name = "CurrencyHandlerBot"; // bot name
 
