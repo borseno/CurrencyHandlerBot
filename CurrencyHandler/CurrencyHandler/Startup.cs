@@ -23,10 +23,10 @@ namespace CurrencyHandler
         {
             services.AddMvc();
 
-            var connectionString = Configuration.GetConnectionString("SettingsDBSqlServer");
+            var connectionString = Configuration.GetConnectionString("SettingsDB");
 
             services.AddDbContext<ChatSettingsContext>(
-                options => options.UseSqlServer(connectionString));
+                options => options.UseMySql(connectionString));
 
             services.AddScoped<CurrenciesRepository>();
 
