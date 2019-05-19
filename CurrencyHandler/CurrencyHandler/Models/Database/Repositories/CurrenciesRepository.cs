@@ -139,25 +139,29 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         internal async Task<string[]> GetDisplayEmojisAsync(long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId) 
-                       ?? await InitChatAsync(chatId);
+            var chat = await Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cs => cs.ChatId == chatId) 
+                ?? await InitChatAsync(chatId);
 
             var displayCurrencies = chat.DisplayCurrencies;
-            var currenciesEmojis = Context.CurrencyEmojis;
+            var currenciesEmojis = Context.CurrencyEmojis.AsNoTracking();
 
             return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).Select(ce => ce.Emoji).ToArrayAsync();
         }
 
         public string GetCurrency(long chatId)
         {
-            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatId);
+            var chat = Context.ChatSettings.AsNoTracking().FirstOrDefault(t => t.ChatId == chatId);
 
             return chat == null ? InitChat(chatId).ValueCurrency : chat.ValueCurrency;
         }
 
         public decimal GetPercents(long chatId)
         {
-            var chat = Context.ChatSettings.FirstOrDefault(t => t.ChatId == chatId);
+            var chat = Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefault(t => t.ChatId == chatId);
 
             return chat?.Percents ?? InitChat(chatId).Percents;
         }
@@ -252,14 +256,18 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<string> GetCurrencyAsync(long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(t => t.ChatId == chatId);
+            var chat = await Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ChatId == chatId);
 
             return chat == null ? (await InitChatAsync(chatId)).ValueCurrency : chat.ValueCurrency;
         }
 
         public async Task<decimal> GetPercentsAsync(long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(t => t.ChatId == chatId);
+            var chat = await Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.ChatId == chatId);
 
             return chat?.Percents ?? (await InitChatAsync(chatId)).Percents;
         }
@@ -276,12 +284,16 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public CurrencyEmoji GetCurrencyEmojiFromCurrency(string currency)
         {
-            return Context.CurrencyEmojis.FirstOrDefault(ce => ce.Currency == currency);
+            return Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstOrDefault(ce => ce.Currency == currency);
         }
 
         public CurrencyEmoji GetCurrencyEmojiFromEmoji(string emoji)
         {
-            return Context.CurrencyEmojis.FirstOrDefault(ce => ce.Emoji == emoji);
+            return Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstOrDefault(ce => ce.Emoji == emoji);
         }
 
         public CurrencyEmoji GetCurrencyEmoji(long chatId)
@@ -291,12 +303,16 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromCurrencyAsync(string currency)
         {
-            return await Context.CurrencyEmojis.FirstOrDefaultAsync(ce => ce.Currency == currency);
+            return await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ce => ce.Currency == currency);
         }
 
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromEmojiAsync(string emoji)
         {
-            return await Context.CurrencyEmojis.FirstOrDefaultAsync(ce => ce.Emoji == emoji);
+            return await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstOrDefaultAsync(ce => ce.Emoji == emoji);
         }
 
         public async Task<string> GetCurrencyFromEmojiAsync(string emoji)
@@ -338,12 +354,15 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<IReadOnlyList<string>> GetDisplayCurrenciesAsync(long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
+            var chat = await Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cs => cs.ChatId == chatId);
 
             if (chat == null)
             {
                 chat = new ChatSettings
                 {
+                    ChatId = chatId,
                     DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
                 };
 
@@ -355,8 +374,12 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<IReadOnlyList<CurrencyEmoji>> GetDisplayCurrenciesEmojisAsync(long chatId)
         {
-            var displayCurrencies = (await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)).DisplayCurrencies;
-            var currenciesEmojis = Context.CurrencyEmojis;
+            var displayCurrencies = (await Context.ChatSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cs => cs.ChatId == chatId)
+                ).DisplayCurrencies;
+
+            var currenciesEmojis = Context.CurrencyEmojis.AsNoTracking();
 
             return await currenciesEmojis.Where(i => i.Currency.In(displayCurrencies)).ToArrayAsync();
         }
