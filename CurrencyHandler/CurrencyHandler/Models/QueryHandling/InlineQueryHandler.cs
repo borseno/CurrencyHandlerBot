@@ -13,18 +13,11 @@ namespace CurrencyHandler.Models.QueryHandling
 {
     public class InlineQueryHandler
     {
-        private readonly IReadOnlyList<CurrencyEmoji> currenciesEmojis;
-
         private readonly CurrenciesEmojisRepository repo;
 
         public InlineQueryHandler(CurrenciesEmojisRepository repo)
         {
             this.repo = repo;
-
-            if (currenciesEmojis == null)
-            {
-                currenciesEmojis = repo.GetCurrencyEmojis().ToList().AsReadOnly();
-            }
         }
 
         public async Task HandleAsync(InlineQuery q)
@@ -33,8 +26,13 @@ namespace CurrencyHandler.Models.QueryHandling
                 return;
 
             var bot = await Bot.GetAsync();
-            var data = await CurrenciesDataCaching.GetValCursAsync();
             var input = q.Query;
+
+            var dataTask = CurrenciesDataCaching.GetValCursAsync();
+            var currenciesEmojisTask = repo.GetCurrencyEmojisAsync();
+
+            var data = dataTask.Result;
+            var currenciesEmojis = currenciesEmojisTask.Result;
 
             string currency = null;
             foreach (var i in currenciesEmojis)
@@ -70,7 +68,7 @@ namespace CurrencyHandler.Models.QueryHandling
                 if (currency == null)
                     currency = DefaultValues.DefaultValueCurrency;
 
-                var currencyEmoji = await repo.GetCurrencyEmojiFromCurrencyAsync(currency);
+                var currencyEmoji = currenciesEmojis.First(ce => ce.Currency == currency);
 
                 var values =
                     await ValuesCalculator.GetCurrenciesValuesAsync(value, currencyEmoji, data, currenciesEmojis);
