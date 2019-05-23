@@ -1,6 +1,9 @@
 ﻿using CurrencyHandler.Models;
+using CurrencyHandler.Models.Commands;
 using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.QueryHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +32,27 @@ namespace CurrencyHandler
                 options => options.UseSqlite(connectionString));
 
             services.AddScoped<CurrenciesRepository>();
-
             services.AddScoped<CurrenciesEmojisRepository>();
+
+
+            services.AddScoped<ValueCurrencyKeyboardHandler>();
+            services.AddScoped<DisplayCurrenciesKeyboardHandler>();
+
+            services.AddScoped<Keyboards>();
+
+
+            services.AddScoped<CalcCommand>();
+            services.AddScoped<DisplayCurrenciesCommand>();
+            services.AddScoped<InfoCommand>();
+            services.AddScoped<StartCommand>();
+            services.AddScoped<ValueCurrencyCommand>();
+            services.AddScoped<SettingsCommand>();
+            services.AddScoped<PercentsCommand>();
+
+            services.AddScoped<Commands>();
+
+
+            services.AddScoped<InlineQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +78,7 @@ namespace CurrencyHandler
             });
 
             //Bot Configurations
-            Bot.GetAsync().GetAwaiter().GetResult();
+            Bot.Init();
         }
     }
 }

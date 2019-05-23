@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Database.Repositories;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
@@ -17,7 +16,6 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         public override void HandleCallBack(CallbackQuery callbackQuery)
         {
-            var bot = Bot.GetAsync().GetAwaiter().GetResult();
             var buttonText = GetTextFromCallbackData(callbackQuery);
             var currencyEmoji = Repository.GetCurrencyEmojiFromEmoji(buttonText);
 
@@ -33,16 +31,15 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
                 answer = $"Could not set currency to {buttonText} :(";
             }
 
-            var callbackAnswerTask = bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
+            var callbackAnswerTask = Bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
 
-            var textAnswerTask = bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, answer);
+            var textAnswerTask = Bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, answer);
 
             Task.WhenAll(callbackAnswerTask, textAnswerTask).GetAwaiter().GetResult();
         }
 
         public override async Task HandleCallBackAsync(CallbackQuery callbackQuery)
         {
-            var bot = await Bot.GetAsync();
             var buttonText = GetTextFromCallbackData(callbackQuery);
             var currencyEmoji = await Repository.GetCurrencyEmojiFromEmojiAsync(buttonText);
 
@@ -58,14 +55,14 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
                 answer = $"Could not set currency to {buttonText} :(";
             }
 
-            var callbackAnswerTask = bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
+            var callbackAnswerTask = Bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
 
-            var textAnswerTask = bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, answer);
+            var textAnswerTask = Bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, answer);
 
             await Task.WhenAll(callbackAnswerTask, textAnswerTask);
         }
 
-        public override void SendKeyboard(Message message, TelegramBotClient client)
+        public override void SendKeyboard(Message message)
         {
             var chatId = message.Chat.Id;
 
@@ -73,10 +70,10 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
             var keyboard = StringArrayToKeyboard(currencies);
 
-            client.SendTextMessageAsync(chatId, "Choose value currency", replyMarkup: keyboard).GetAwaiter().GetResult();
+            Bot.SendTextMessageAsync(chatId, "Choose value currency", replyMarkup: keyboard).GetAwaiter().GetResult();
         }
 
-        public override async Task SendKeyboardAsync(Message message, TelegramBotClient client)
+        public override async Task SendKeyboardAsync(Message message)
         {
             var chatId = message.Chat.Id;
 
@@ -84,7 +81,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
             var keyboard = StringArrayToKeyboard(currencies);
 
-            await client.SendTextMessageAsync(chatId, "Choose value currency", replyMarkup: keyboard);
+            await Bot.SendTextMessageAsync(chatId, "Choose value currency", replyMarkup: keyboard);
         }
 
         private void HandleCurrencyChange(long chatId, CurrencyEmoji ce)

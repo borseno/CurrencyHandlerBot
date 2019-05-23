@@ -8,16 +8,19 @@ using CurrencyHandler.Models.Extensions;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public abstract class InlineKeyboardHandler
+    public abstract class InlineKeyboardHandler : IDisposable
     {
-        public abstract string Name { get; }
-
         protected CurrenciesRepository Repository { get; }
+
+        protected TelegramBotClient Bot { get; }
 
         protected InlineKeyboardHandler(CurrenciesRepository repo)
         {
             Repository = repo;
+            Bot = Models.Bot.GetClient();
         }
+
+        public abstract string Name { get; }
 
         public bool Contains(string callBackData)
         {
@@ -25,12 +28,12 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             return callBackData.IndexOf(Name, StringComparison.Ordinal) == firstIndex; 
         }
 
-        public abstract void SendKeyboard(Message message, TelegramBotClient client);
+        public abstract void SendKeyboard(Message message);
 
         public abstract void HandleCallBack(CallbackQuery callbackQuery);
 
         // ReSharper disable once InconsistentNaming (should be implemented as async)
-        public abstract Task SendKeyboardAsync(Message message, TelegramBotClient client);
+        public abstract Task SendKeyboardAsync(Message message);
 
         // ReSharper disable once InconsistentNaming (should be implemented as async)
         public abstract Task HandleCallBackAsync(CallbackQuery callbackQuery);
@@ -84,6 +87,11 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         protected virtual string GetTextFromCallbackData(CallbackQuery data)
         {
             return data.Data.TrimStart(Name.ToCharArray());
+        }
+
+        public void Dispose()
+        {
+            ((IDisposable)Repository).Dispose();
         }
     }
 }
