@@ -9,7 +9,7 @@ namespace CurrencyHandler.Models.Commands
 {
     public class SettingsCommand : Command
     {
-        public SettingsCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public SettingsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 

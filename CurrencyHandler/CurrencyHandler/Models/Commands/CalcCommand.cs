@@ -15,7 +15,7 @@ namespace CurrencyHandler.Models.Commands
     {
         private readonly char[] charsToIgnore;
 
-        public CalcCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public CalcCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
             charsToIgnore = $"/{Name.ToLower()}{Name.ToUpper()}".ToCharArray();
         }

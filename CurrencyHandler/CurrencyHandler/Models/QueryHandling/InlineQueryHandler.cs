@@ -11,12 +11,12 @@ using static CurrencyHandler.Models.DataCaching.CurrenciesDataCaching;
 
 namespace CurrencyHandler.Models.QueryHandling
 {
-    public class InlineQueryHandler : IDisposable
+    public class InlineQueryHandler : IInlineQueryHandler
     {
-        private readonly CurrenciesEmojisRepository repo;
-        private readonly TelegramBotClient bot;
+        private readonly ICurrenciesEmojisRepository repo;
+        private readonly ITelegramBotClient bot;
 
-        public InlineQueryHandler(CurrenciesEmojisRepository repo)
+        public InlineQueryHandler(ICurrenciesEmojisRepository repo)
         {
             this.repo = repo;
             this.bot = Bot.GetClient();

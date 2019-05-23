@@ -8,7 +8,7 @@ namespace CurrencyHandler.Models.Commands
 {
     public class StartCommand : Command
     {
-        public StartCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public StartCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 

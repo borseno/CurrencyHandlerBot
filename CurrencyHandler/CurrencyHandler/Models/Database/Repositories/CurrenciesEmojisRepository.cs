@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CurrencyHandler.Models.Database.Repositories
 {
-    public class CurrenciesEmojisRepository : IDisposable
+    public class CurrenciesEmojisRepository : ICurrenciesEmojisRepository
     {
         protected ChatSettingsContext Context { get; }
 

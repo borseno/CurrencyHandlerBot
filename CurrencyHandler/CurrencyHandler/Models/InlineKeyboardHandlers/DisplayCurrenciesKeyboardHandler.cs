@@ -11,7 +11,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
     {
         private const string ChosenText = " ✅";
 
-        public DisplayCurrenciesKeyboardHandler(CurrenciesRepository repo) : base(repo)
+        public DisplayCurrenciesKeyboardHandler(ICurrenciesRepository repo) : base(repo)
         {
         }
 

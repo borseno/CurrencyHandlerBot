@@ -11,7 +11,7 @@ namespace CurrencyHandler.Models.Commands
     {
         private const string InfoTextPath = "Texts/Info.txt";
 
-        public InfoCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public InfoCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 
