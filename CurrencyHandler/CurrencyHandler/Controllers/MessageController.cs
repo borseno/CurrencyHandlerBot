@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CurrencyHandler.Models;
-using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.Commands;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;
 using CurrencyHandler.Models.InlineKeyboardHandlers;
@@ -23,14 +23,15 @@ namespace CurrencyHandler.Controllers
             UpdateType.CallbackQuery
         };
 
-        private readonly InlineQueryHandler _inlineQueryHandler;
-        private readonly CurrenciesRepository _repo;
+        private readonly IInlineQueryHandler inlineQueryHandler;
+        private readonly ICommands commands;
+        private readonly IKeyboards keyboards;
 
-        public MessageController(CurrenciesRepository repo, CurrenciesEmojisRepository emojiRepo)
+        public MessageController(IInlineQueryHandler inlineQueryHandler, IKeyboards keyboards, ICommands commands)
         {
-            _inlineQueryHandler = new InlineQueryHandler(emojiRepo);
-
-            _repo = repo;
+            this.inlineQueryHandler = inlineQueryHandler;
+            this.commands = commands;
+            this.keyboards = keyboards;
         }
 
         [HttpGet]
@@ -52,7 +53,7 @@ namespace CurrencyHandler.Controllers
             {
                 if (update.Type == UpdateType.CallbackQuery)
                 {
-                    foreach (var i in Keyboards.Get(_repo))
+                    foreach (var i in keyboards.Get())
                     {
                         if (i.Contains(update.CallbackQuery.Data))
                         {
@@ -64,12 +65,10 @@ namespace CurrencyHandler.Controllers
 
                 if (update.Type == UpdateType.InlineQuery)
                 {
-                    await _inlineQueryHandler.HandleAsync(update.InlineQuery);
+                    await inlineQueryHandler.HandleAsync(update.InlineQuery);
                     return Ok();
                 }
 
-                var commands = Bot.Commands;
-                var botClient = await Bot.GetAsync();
                 var message = update.Message;
 
                 if (message == null || String.IsNullOrEmpty(message.Text))
@@ -77,11 +76,11 @@ namespace CurrencyHandler.Controllers
                     return Ok();
                 }
 
-                foreach (var command in commands)
+                foreach (var command in commands.Get())
                 {
                     if (command?.Contains(message.Text) ?? false)
                     {
-                        await command.Execute(message, botClient, _repo);
+                        await command.Execute(message);
 
                         break;
                     }
@@ -99,7 +98,9 @@ namespace CurrencyHandler.Controllers
         {
             base.Dispose(disposing);
 
-            _repo.Dispose();
+            keyboards.Dispose();
+            commands.Dispose();
+            inlineQueryHandler.Dispose();
         }
     }
 }

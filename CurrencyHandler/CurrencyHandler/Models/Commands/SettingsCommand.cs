@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -8,25 +9,22 @@ namespace CurrencyHandler.Models.Commands
 {
     public class SettingsCommand : Command
     {
-        public static SettingsCommand Instance { get; } = new SettingsCommand();
+        public SettingsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
+        {
+        }
 
         public override string Name => "Settings";
 
-        private SettingsCommand()
-        {
-
-        }
-
         // TODO: 1. Add DisplayCurrencies to settings output
         // TODO: 2. Add emojis to currencies
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
+        public override async Task Execute(Message message)
         {
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
             var nl = Environment.NewLine; // just a shortcut
 
-            var percentsTask = repo.GetPercentsAsync(chatId); 
-            var currencyTask = repo.GetCurrencyAsync(chatId);
+            var percentsTask = Repo.GetPercentsAsync(chatId); 
+            var currencyTask = Repo.GetCurrencyAsync(chatId);
 
             // execute them in parallel
             await Task.WhenAll(percentsTask, currencyTask); 
@@ -35,7 +33,7 @@ namespace CurrencyHandler.Models.Commands
                        $"Percents: {percentsTask.Result}{nl}" +
                        $"Currency: {currencyTask.Result}";
 
-            await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
+            await Client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
         }
     }
 }

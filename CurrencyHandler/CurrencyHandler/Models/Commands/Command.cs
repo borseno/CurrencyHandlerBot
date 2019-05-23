@@ -1,15 +1,30 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public abstract class Command
+    public abstract class Command : ICommand
     {
+        public Command(IKeyboards keyboards, ICurrenciesRepository repo)
+        {
+            Keyboards = keyboards;
+            Repo = repo;
+            Client = Bot.GetClient();
+        }
+
+        protected ITelegramBotClient Client { get; }
+
+        protected ICurrenciesRepository Repo { get; }
+
+        protected IKeyboards Keyboards { get; }
+
         public abstract string Name { get; }
 
-        public abstract Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo);
+        public abstract Task Execute(Message message);
 
         /// <summary>
         /// Indicates whether the given command is this command or not.
@@ -23,6 +38,12 @@ namespace CurrencyHandler.Models.Commands
                 return false;
 
             return command.ToLower().Contains(Name.ToLower());
+        }
+
+        public void Dispose()
+        {
+            Repo.Dispose();
+            Keyboards.Dispose();
         }
     }
 }

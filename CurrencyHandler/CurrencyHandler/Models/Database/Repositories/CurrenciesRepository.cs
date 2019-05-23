@@ -10,16 +10,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyHandler.Models.Database.Repositories
 {
-    public class CurrenciesRepository : IDisposable
+    public class CurrenciesRepository : ICurrenciesRepository
     {
         protected ChatSettingsContext Context { get; }
 
-        protected CurrenciesEmojisRepository CurrenciesEmojisRepository { get; }
+        protected ICurrenciesEmojisRepository CurrenciesEmojisRepository { get; }
 
-        public CurrenciesRepository(ChatSettingsContext ctx)
+        public CurrenciesRepository(ChatSettingsContext ctx, ICurrenciesEmojisRepository repo) // TODO: DI this
         {
             Context = ctx;
-            CurrenciesEmojisRepository = new CurrenciesEmojisRepository(ctx);
+            CurrenciesEmojisRepository = repo;
         }
 
         protected ChatSettings AddChat(ChatSettings entity)
@@ -74,7 +74,7 @@ namespace CurrencyHandler.Models.Database.Repositories
             return entity;
         }
 
-        internal async Task RemoveDisplayEmojisAsync(string emoji, long chatID)
+        public async Task RemoveDisplayEmojisAsync(string emoji, long chatID)
         {
             ChatSettings chat;
             string currency; // ChatSettings store only Currency, so we'll need to get the currency for given emoji
@@ -96,7 +96,7 @@ namespace CurrencyHandler.Models.Database.Repositories
                 currency = (await Context.CurrencyEmojis.FirstAsync(i => i.Emoji == emoji)).Currency;
             }
 
-            var isRemoved =  chat.DisplayCurrencies.Remove(currency);
+            var isRemoved = chat.DisplayCurrencies.Remove(currency);
 
             if (!isRemoved)
                 throw new Exception(
@@ -108,7 +108,7 @@ namespace CurrencyHandler.Models.Database.Repositories
             Context.SaveChanges();
         }
 
-        internal async Task AddDisplayEmojisAsync(string emoji, long chatID)
+        public async Task AddDisplayEmojisAsync(string emoji, long chatID)
         {
             ChatSettings chat;
             string currency; // ChatSettings store only Currency, so we'll need to get the currency for given emoji
@@ -137,11 +137,11 @@ namespace CurrencyHandler.Models.Database.Repositories
             Context.SaveChanges();
         }
 
-        internal async Task<string[]> GetDisplayEmojisAsync(long chatId)
+        public async Task<string[]> GetDisplayEmojisAsync(long chatId)
         {
             var chat = await Context.ChatSettings
                 .AsNoTracking()
-                .FirstOrDefaultAsync(cs => cs.ChatId == chatId) 
+                .FirstOrDefaultAsync(cs => cs.ChatId == chatId)
                 ?? await InitChatAsync(chatId);
 
             var displayCurrencies = chat.DisplayCurrencies;
@@ -329,7 +329,7 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)
                        ?? new ChatSettings();
-              
+
             chat.DisplayCurrencies = displayCurrencies.ToList();
 
             await Context.SaveChangesAsync();

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -9,14 +10,11 @@ namespace CurrencyHandler.Models.Commands
 {
     public class PercentsCommand : Command
     {
-        public static PercentsCommand Instance { get; } = new PercentsCommand();
+        public PercentsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
+        {
+        }
 
         public override string Name => "Percents";
-
-        private PercentsCommand()
-        {
-
-        }
 
         /// <summary>
         /// Handles percents settings change for the chat 
@@ -25,7 +23,7 @@ namespace CurrencyHandler.Models.Commands
         /// <param name="client">Bot instance, needed to answer on the message</param>
         /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
         /// <returns>Task to be awaited</returns>
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
+        public override async Task Execute(Message message)
         {
             const string pattern = @"\/percents \-{0,1}\d+(.\d+){0,1}";
             const string numbers = "0123456789";
@@ -58,10 +56,9 @@ namespace CurrencyHandler.Models.Commands
             var chatId = message.Chat.Id;
             var text = "Successfuly set your new percent settings!";
 
-            await repo.SetPercentsAsync(number, chatId);
+            await Repo.SetPercentsAsync(number, chatId);
 
-            await client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
-
+            await Client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
         }
     }
 }

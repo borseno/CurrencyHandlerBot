@@ -8,29 +8,32 @@ using CurrencyHandler.Models.Extensions;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public abstract class InlineKeyboardHandler
+    public abstract class InlineKeyboardHandler : IInlineKeyboardHandler
     {
-        public abstract string Name { get; }
+        protected ICurrenciesRepository Repository { get; }
 
-        protected CurrenciesRepository Repository { get; }
+        protected ITelegramBotClient Bot { get; }
 
-        protected InlineKeyboardHandler(CurrenciesRepository repo)
+        protected InlineKeyboardHandler(ICurrenciesRepository repo)
         {
             Repository = repo;
+            Bot = Models.Bot.GetClient();
         }
+
+        public abstract string Name { get; }
 
         public bool Contains(string callBackData)
         {
             const int firstIndex = 0;
-            return callBackData.IndexOf(Name, StringComparison.Ordinal) == firstIndex; 
+            return callBackData.IndexOf(Name, StringComparison.Ordinal) == firstIndex;
         }
 
-        public abstract void SendKeyboard(Message message, TelegramBotClient client);
+        public abstract void SendKeyboard(Message message);
 
         public abstract void HandleCallBack(CallbackQuery callbackQuery);
 
         // ReSharper disable once InconsistentNaming (should be implemented as async)
-        public abstract Task SendKeyboardAsync(Message message, TelegramBotClient client);
+        public abstract Task SendKeyboardAsync(Message message);
 
         // ReSharper disable once InconsistentNaming (should be implemented as async)
         public abstract Task HandleCallBackAsync(CallbackQuery callbackQuery);
@@ -47,7 +50,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
             var buttons = ToInlineKeyBoardButtons(displayData);
 
-            return new InlineKeyboardMarkup(buttons);            
+            return new InlineKeyboardMarkup(buttons);
         }
 
         /// <summary>
@@ -84,6 +87,11 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
         protected virtual string GetTextFromCallbackData(CallbackQuery data)
         {
             return data.Data.TrimStart(Name.ToCharArray());
+        }
+
+        public void Dispose()
+        {
+            Repository.Dispose();
         }
     }
 }

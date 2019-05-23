@@ -6,6 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.HelperClasses;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
 
 namespace CurrencyHandler.Models.Commands
 {
@@ -14,15 +15,8 @@ namespace CurrencyHandler.Models.Commands
     {
         private readonly char[] charsToIgnore;
 
-        public static CalcCommand Instance { get; } = new CalcCommand();
-
-        private CalcCommand()
+        public CalcCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
-            // ReSharper disable once VirtualMemberCallInConstructor
-            // Reason: The Property shouldn't reference any non-constructed fields and stuff.
-            // It should only contain the name of the command.
-            // Hence, there shouldn't be any undefined behaviors or runtime exceptions 
-            // if one doesn't reference any non-constructed fields in the get method 
             charsToIgnore = $"/{Name.ToLower()}{Name.ToUpper()}".ToCharArray();
         }
 
@@ -36,7 +30,7 @@ namespace CurrencyHandler.Models.Commands
         /// <param name="client">Bot instance, needed to answer on the message</param>
         /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
         /// <returns>Task to be awaited</returns>
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
+        public override async Task Execute(Message message)
         {
             var messageText = message?.Text;
 
@@ -55,9 +49,9 @@ namespace CurrencyHandler.Models.Commands
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
             var dataTask = CurrenciesDataCaching.GetValCursAsync();
-            var percentsTask = repo.GetPercentsAsync(chatId);
-            var valueCurrencyTask = repo.GetCurrencyEmojiAsync(chatId);
-            var displayCurrenciesTask = repo.GetDisplayCurrenciesEmojisAsync(chatId);
+            var percentsTask = Repo.GetPercentsAsync(chatId);
+            var valueCurrencyTask = Repo.GetCurrencyEmojiAsync(chatId);
+            var displayCurrenciesTask = Repo.GetDisplayCurrenciesEmojisAsync(chatId);
 
             // execute them all in parallel and wait for the completion
             await Task.WhenAll(dataTask, percentsTask, displayCurrenciesTask, valueCurrencyTask);
@@ -72,7 +66,7 @@ namespace CurrencyHandler.Models.Commands
             var textToSend = await AnswerBuilder.BuildStringFromValuesAsync(
                 values, valueCurrencyTask.Result, percentsTask.Result);
 
-            await client.SendTextMessageAsync(chatId, textToSend, replyToMessageId: messageId);
+            await Client.SendTextMessageAsync(chatId, textToSend, replyToMessageId: messageId);
         }
         
         /// <inheritdoc />
