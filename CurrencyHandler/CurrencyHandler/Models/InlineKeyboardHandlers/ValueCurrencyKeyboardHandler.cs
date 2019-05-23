@@ -10,7 +10,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
     {
         public override string Name => "ValueCurrency";
 
-        public ValueCurrencyKeyboardHandler(CurrenciesRepository repo) : base(repo)
+        public ValueCurrencyKeyboardHandler(ICurrenciesRepository repo) : base(repo)
         {
         }
 

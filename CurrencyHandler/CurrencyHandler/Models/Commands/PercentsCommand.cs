@@ -10,7 +10,7 @@ namespace CurrencyHandler.Models.Commands
 {
     public class PercentsCommand : Command
     {
-        public PercentsCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public PercentsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 

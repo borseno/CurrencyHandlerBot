@@ -23,11 +23,11 @@ namespace CurrencyHandler.Controllers
             UpdateType.CallbackQuery
         };
 
-        private readonly InlineQueryHandler inlineQueryHandler;
-        private readonly Commands commands;
-        private readonly Keyboards keyboards;
+        private readonly IInlineQueryHandler inlineQueryHandler;
+        private readonly ICommands commands;
+        private readonly IKeyboards keyboards;
 
-        public MessageController(InlineQueryHandler inlineQueryHandler, Keyboards keyboards, Commands commands)
+        public MessageController(IInlineQueryHandler inlineQueryHandler, IKeyboards keyboards, ICommands commands)
         {
             this.inlineQueryHandler = inlineQueryHandler;
             this.commands = commands;

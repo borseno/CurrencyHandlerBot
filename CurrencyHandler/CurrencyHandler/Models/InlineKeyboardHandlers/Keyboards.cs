@@ -4,25 +4,25 @@ using System.Linq;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public class Keyboards : IDisposable
+    public class Keyboards : IKeyboards
     {
-        private readonly List<InlineKeyboardHandler> keyboards;
+        private readonly List<IInlineKeyboardHandler> keyboards;
 
         public Keyboards(ValueCurrencyKeyboardHandler kb1, DisplayCurrenciesKeyboardHandler kb2)
         {
-            keyboards = new List<InlineKeyboardHandler>
+            keyboards = new List<IInlineKeyboardHandler>
                 {
                     kb1,
                     kb2
                 };
         }
 
-        public IReadOnlyList<InlineKeyboardHandler> Get()
+        public IReadOnlyList<IInlineKeyboardHandler> Get()
         {
             return keyboards;
         }
 
-        public InlineKeyboardHandler FirstOrDefault(string name)
+        public IInlineKeyboardHandler FirstOrDefault(string name)
         {
             return Get().FirstOrDefault(kb => String.Equals(kb.Name, name, StringComparison.CurrentCultureIgnoreCase));
         }

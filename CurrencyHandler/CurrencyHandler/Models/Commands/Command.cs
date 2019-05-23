@@ -7,20 +7,20 @@ using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public abstract class Command : IDisposable
+    public abstract class Command : ICommand
     {
-        public Command(Keyboards keyboards, CurrenciesRepository repo)
+        public Command(IKeyboards keyboards, ICurrenciesRepository repo)
         {
             Keyboards = keyboards;
             Repo = repo;
             Client = Bot.GetClient();
         }
 
-        protected TelegramBotClient Client { get; }
+        protected ITelegramBotClient Client { get; }
 
-        protected CurrenciesRepository Repo { get; }
+        protected ICurrenciesRepository Repo { get; }
 
-        protected Keyboards Keyboards { get; }
+        protected IKeyboards Keyboards { get; }
 
         public abstract string Name { get; }
 
@@ -42,8 +42,8 @@ namespace CurrencyHandler.Models.Commands
 
         public void Dispose()
         {
-            ((IDisposable)Repo).Dispose();
-            ((IDisposable)Keyboards).Dispose();
+            Repo.Dispose();
+            Keyboards.Dispose();
         }
     }
 }

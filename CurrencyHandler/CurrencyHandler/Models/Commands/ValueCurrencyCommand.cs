@@ -9,7 +9,7 @@ namespace CurrencyHandler.Models.Commands
 {
     public class ValueCurrencyCommand : Command
     {
-        public ValueCurrencyCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        public ValueCurrencyCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 

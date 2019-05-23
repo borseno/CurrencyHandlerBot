@@ -31,15 +31,13 @@ namespace CurrencyHandler
             services.AddDbContext<ChatSettingsContext>(
                 options => options.UseSqlite(connectionString));
 
-            services.AddScoped<CurrenciesRepository>();
-            services.AddScoped<CurrenciesEmojisRepository>();
-
+            services.AddScoped<ICurrenciesRepository, CurrenciesRepository>();
+            services.AddScoped<ICurrenciesEmojisRepository, CurrenciesEmojisRepository>();
 
             services.AddScoped<ValueCurrencyKeyboardHandler>();
             services.AddScoped<DisplayCurrenciesKeyboardHandler>();
 
-            services.AddScoped<Keyboards>();
-
+            services.AddScoped<IKeyboards, Keyboards>();
 
             services.AddScoped<CalcCommand>();
             services.AddScoped<DisplayCurrenciesCommand>();
@@ -49,10 +47,9 @@ namespace CurrencyHandler
             services.AddScoped<SettingsCommand>();
             services.AddScoped<PercentsCommand>();
 
-            services.AddScoped<Commands>();
+            services.AddScoped<ICommands, Commands>();
 
-
-            services.AddScoped<InlineQueryHandler>();
+            services.AddScoped<IInlineQueryHandler, InlineQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
