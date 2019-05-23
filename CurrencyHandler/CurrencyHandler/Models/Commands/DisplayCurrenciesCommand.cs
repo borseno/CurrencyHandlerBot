@@ -9,7 +9,9 @@ namespace CurrencyHandler.Models.Commands
 {
     public class DisplayCurrenciesCommand : Command
     {
-        public static DisplayCurrenciesCommand Instance => new DisplayCurrenciesCommand();
+        public DisplayCurrenciesCommand(Keyboards keyboards, CurrenciesRepository repo) : base(keyboards, repo)
+        {
+        }
 
         public override string Name => "DisplayCurrencies";
 
@@ -20,13 +22,13 @@ namespace CurrencyHandler.Models.Commands
         /// <param name="client">Bot instance, needed to answer on the message</param>
         /// <param name="repo">Repository for the whole db, allows this command handler to save/read data</param>
         /// <returns>Task to be awaited</returns>
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
+        public override async Task Execute(Message message)
         {
-            var keyboard = Keyboards.FirstOrDefault(repo, Name);
+            var keyboard = Keyboards.FirstOrDefault(Name);
 
             if (keyboard != null)
             {
-                await keyboard.SendKeyboardAsync(message, client);
+                await keyboard.SendKeyboardAsync(message);
             }
             else
             {
