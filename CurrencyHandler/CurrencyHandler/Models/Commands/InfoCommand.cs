@@ -3,11 +3,12 @@ using Telegram.Bot.Types;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
 using static System.IO.File;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.Commands.Abstractions;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class InfoCommand : Command
+    public class InfoCommand : Command, IInfoCommand
     {
         private const string InfoTextPath = "Texts/Info.txt";
 

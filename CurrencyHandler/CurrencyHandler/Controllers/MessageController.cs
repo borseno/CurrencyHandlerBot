@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CurrencyHandler.Models;
-using CurrencyHandler.Models.Commands;
+using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using CurrencyHandler.Models.QueryHandling;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;

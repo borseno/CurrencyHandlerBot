@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
     {
         private readonly List<IInlineKeyboardHandler> keyboards;
 
-        public Keyboards(ValueCurrencyKeyboardHandler kb1, DisplayCurrenciesKeyboardHandler kb2)
+        public Keyboards(IValueCurrencyKeyboardHandler kb1, IDisplayCurrenciesKeyboardHandler kb2)
         {
             keyboards = new List<IInlineKeyboardHandler>
                 {
