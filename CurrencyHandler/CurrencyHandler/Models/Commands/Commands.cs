@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CurrencyHandler.Models.Commands.Abstractions;
+using System;
 using System.Collections.Generic;
 
 namespace CurrencyHandler.Models.Commands
@@ -7,8 +8,8 @@ namespace CurrencyHandler.Models.Commands
     {
         private readonly List<ICommand> commands;
 
-        public Commands(CalcCommand c1, DisplayCurrenciesCommand c2, ValueCurrencyCommand c3,
-            StartCommand c4, SettingsCommand c5, PercentsCommand c6, InfoCommand c7)
+        public Commands(ICalcCommand c1, IDisplayCurrenciesCommand c2, IValueCurrencyCommand c3,
+            IStartCommand c4, ISettingsCommand c5, IPercentsCommand c6, IInfoCommand c7)
         {
             commands = new List<ICommand>
                 {

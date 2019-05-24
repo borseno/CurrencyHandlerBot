@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
 
-namespace CurrencyHandler.Models.Commands
+namespace CurrencyHandler.Models.Commands.Abstractions
 {
     public interface ICommand : IDisposable
     {
