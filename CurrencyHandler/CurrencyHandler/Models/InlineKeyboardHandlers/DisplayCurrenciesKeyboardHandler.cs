@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler
+    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler, IDisplayCurrenciesKeyboardHandler
     {
         private const string ChosenText = " ✅";
 
@@ -41,7 +42,7 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             {
                 await ProcessAddAsync(buttonCurrencyEmoji, chatId);
                 answer = $"You've successfully added {buttonCurrencyEmoji} to display!";
-            }  
+            }
 
             await UpdateKeyboardAsync(chatID, msgID);
 

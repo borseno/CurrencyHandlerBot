@@ -6,12 +6,13 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.HelperClasses;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.Commands.Abstractions;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
-    public class CalcCommand : Command
+    public class CalcCommand : Command, ICalcCommand
     {
         private readonly char[] charsToIgnore;
 
@@ -68,7 +69,7 @@ namespace CurrencyHandler.Models.Commands
 
             await Client.SendTextMessageAsync(chatId, textToSend, replyToMessageId: messageId);
         }
-        
+
         /// <inheritdoc />
         /// <summary>
         /// overrides Command's Contains method, allowing to pass just a number

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class PercentsCommand : Command
+    public class PercentsCommand : Command, IPercentsCommand
     {
         public PercentsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {

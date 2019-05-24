@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using System;
+using CurrencyHandler.Models.Commands.Abstractions;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class ValueCurrencyCommand : Command
+    public class ValueCurrencyCommand : Command, IValueCurrencyCommand
     {
         public ValueCurrencyCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {

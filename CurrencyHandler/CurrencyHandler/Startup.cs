@@ -1,8 +1,10 @@
 ﻿using CurrencyHandler.Models;
 using CurrencyHandler.Models.Commands;
+using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using CurrencyHandler.Models.QueryHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,18 +36,18 @@ namespace CurrencyHandler
             services.AddScoped<ICurrenciesRepository, CurrenciesRepository>();
             services.AddScoped<ICurrenciesEmojisRepository, CurrenciesEmojisRepository>();
 
-            services.AddScoped<ValueCurrencyKeyboardHandler>();
-            services.AddScoped<DisplayCurrenciesKeyboardHandler>();
+            services.AddScoped<IValueCurrencyKeyboardHandler, ValueCurrencyKeyboardHandler>();
+            services.AddScoped<IDisplayCurrenciesKeyboardHandler, DisplayCurrenciesKeyboardHandler>();
 
             services.AddScoped<IKeyboards, Keyboards>();
 
-            services.AddScoped<CalcCommand>();
-            services.AddScoped<DisplayCurrenciesCommand>();
-            services.AddScoped<InfoCommand>();
-            services.AddScoped<StartCommand>();
-            services.AddScoped<ValueCurrencyCommand>();
-            services.AddScoped<SettingsCommand>();
-            services.AddScoped<PercentsCommand>();
+            services.AddScoped<ICalcCommand, CalcCommand>();
+            services.AddScoped<IDisplayCurrenciesCommand, DisplayCurrenciesCommand>();
+            services.AddScoped<IInfoCommand, InfoCommand>();
+            services.AddScoped<IStartCommand, StartCommand>();
+            services.AddScoped<IValueCurrencyCommand, ValueCurrencyCommand>();
+            services.AddScoped<ISettingsCommand, SettingsCommand>();
+            services.AddScoped<IPercentsCommand, PercentsCommand>();
 
             services.AddScoped<ICommands, Commands>();
 

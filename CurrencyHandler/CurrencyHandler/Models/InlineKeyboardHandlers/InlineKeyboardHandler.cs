@@ -5,6 +5,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using CurrencyHandler.Models.Extensions;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
