@@ -1,25 +1,23 @@
 ﻿using System.Threading.Tasks;
+using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using static System.IO.File;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class StartCommand : Command
+    public class StartCommand : Command, IStartCommand
     {
-        public static StartCommand Instance { get; } = new StartCommand();
+        public StartCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
+        {
+        }
 
         public override string Name => "Start";
 
-        private StartCommand()
+        public override async Task Execute(Message message)
         {
-
-        }
-
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
-        {
-            await InfoCommand.Instance.Execute(message, client, repo);
+            await new InfoCommand(Keyboards, Repo).Execute(message);
         }
     }
 }

@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using Telegram.Bot;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler
+    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler, IDisplayCurrenciesKeyboardHandler
     {
         private const string ChosenText = " ✅";
 
-        public override string Name => "DisplayCurrencies";
-
-        public DisplayCurrenciesKeyboardHandler(CurrenciesRepository repo) : base(repo)
+        public DisplayCurrenciesKeyboardHandler(ICurrenciesRepository repo) : base(repo)
         {
         }
+
+        public override string Name => "DisplayCurrencies";
 
         public override void HandleCallBack(CallbackQuery callbackQuery)
         {
@@ -26,8 +25,6 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         public override async Task HandleCallBackAsync(CallbackQuery callbackQuery)
         {
-            var bot = await Bot.GetAsync();
-
             var chatID = callbackQuery.Message.Chat.Id;
             var msgID = callbackQuery.Message.MessageId;
 
@@ -45,11 +42,11 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             {
                 await ProcessAddAsync(buttonCurrencyEmoji, chatId);
                 answer = $"You've successfully added {buttonCurrencyEmoji} to display!";
-            }  
+            }
 
             await UpdateKeyboardAsync(chatID, msgID);
 
-            await bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
+            await Bot.AnswerCallbackQueryAsync(callbackQuery.Id, answer);
         }
 
         private async Task ProcessAddAsync(string emoji, long chatID)
@@ -62,18 +59,18 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             await Repository.RemoveDisplayEmojisAsync(emoji, chatID);
         }
 
-        public override void SendKeyboard(Message message, TelegramBotClient client)
+        public override void SendKeyboard(Message message)
         {
             throw new NotImplementedException();
         }
 
-        public override async Task SendKeyboardAsync(Message message, TelegramBotClient client)
+        public override async Task SendKeyboardAsync(Message message)
         {
             var chatId = message.Chat.Id;
 
             var keyboard = await GetHighlightedKeyboardAsync(chatId);
 
-            await client.SendTextMessageAsync(chatId, "Choose currencies to display", replyMarkup: keyboard);
+            await Bot.SendTextMessageAsync(chatId, "Choose currencies to display", replyMarkup: keyboard);
         }
 
         private async Task<InlineKeyboardMarkup> GetHighlightedKeyboardAsync(long chatId)
@@ -106,12 +103,11 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 
         private async Task UpdateKeyboardAsync(long chatID, int messageID)
         {
-            var botTask = Bot.GetAsync();
             var keyboardTask = GetHighlightedKeyboardAsync(chatID);
 
-            await Task.WhenAll(botTask, keyboardTask);
+            await Task.WhenAll(keyboardTask);
 
-            await botTask.Result.EditMessageReplyMarkupAsync(chatID, messageID, keyboardTask.Result);
+            await Bot.EditMessageReplyMarkupAsync(chatID, messageID, keyboardTask.Result);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace CurrencyHandler.Models.ExceptionsHandling
 
         public static async Task HandleExceptionAsync(Exception e, Update update, UpdateType type)
         {
-            var bot = await Bot.GetAsync();
+            var bot = Bot.GetClient();
 
             var exceptionMsg =
                 $"Exception type: {e.GetType().Name}{NL}" +
