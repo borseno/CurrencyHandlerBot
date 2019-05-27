@@ -26,16 +26,9 @@ namespace CurrencyHandler.Models.Commands
         /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message)
         {
-            const string pattern = @"\/percents \-{0,1}\d+(.\d+){0,1}";
             const string numbers = "0123456789";
 
             var messageText = message.Text;
-
-            if (!Regex.IsMatch(messageText, pattern))
-            {
-                var errorMsg = "<<< /percents n >>> pattern matching failed for unknown reason";
-                throw new Exception(errorMsg);
-            }
 
             // get substring containing decimal value
             var firstNumIndex = messageText.IndexOfAny(numbers.ToCharArray());
@@ -48,8 +41,10 @@ namespace CurrencyHandler.Models.Commands
             // convert it to decimal and if unsuccessful, return
             if (!decimal.TryParse(substring, out var number))
             {
-                var errorMsg = $"<<< /percents n >>> pattern matching failed on n = {substring} value";
-                throw new Exception(errorMsg);
+                var errorMsg = $"could not match {messageText} as percents command. " +
+                    $"The number the program tried to parse was: {substring}";
+
+                throw new InvalidOperationException(errorMsg);
             }
 
             // else, do the processing
