@@ -25,15 +25,17 @@ namespace CurrencyHandler.Models.Database.Repositories
         public IEnumerable<string> GetCurrencies()
         {
             return Context.CurrencyEmojis
+                .AsNoTracking()
                 .Select(ce => ce.Currency)
-                .AsNoTracking();
+                ;
         }
 
         public IEnumerable<string> GetEmojis()
         {
             return Context.CurrencyEmojis
+                .AsNoTracking()
                 .Select(ce => ce.Emoji)
-                .AsNoTracking();
+                ;
         }
 
         public async Task<CurrencyEmoji[]> GetCurrencyEmojisAsync()
@@ -45,17 +47,20 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<string[]> GetCurrenciesAsync()
         {
-            return await Context.CurrencyEmojis
-                .Select(ce => ce.Currency)
+            return await 
+                Context.CurrencyEmojis
                 .AsNoTracking()
-                .ToArrayAsync();
+                .Select(ce => ce.Currency)
+                .ToArrayAsync()
+                ;
         }
 
         public async Task<string[]> GetEmojisAsync()
         {
-            return await Context.CurrencyEmojis
-                .Select(ce => ce.Emoji)
+            return await 
+                Context.CurrencyEmojis
                 .AsNoTracking()
+                .Select(ce => ce.Emoji)
                 .ToArrayAsync();
         }
 
