@@ -12,7 +12,7 @@ using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 namespace CurrencyHandler.Models.Commands
 {
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
-    public class CalcCommand : Command, ICalcCommand
+    public class CalcCommand : Command
     {
         private readonly char[] charsToIgnore;
 

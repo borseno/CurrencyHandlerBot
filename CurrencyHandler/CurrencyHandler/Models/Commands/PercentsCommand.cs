@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class PercentsCommand : Command, IPercentsCommand
+    public class PercentsCommand : Command
     {
         public PercentsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {

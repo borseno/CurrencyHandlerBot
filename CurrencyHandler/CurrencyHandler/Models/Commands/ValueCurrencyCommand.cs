@@ -8,7 +8,7 @@ using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class ValueCurrencyCommand : Command, IValueCurrencyCommand
+    public class ValueCurrencyCommand : Command
     {
         public ValueCurrencyCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
