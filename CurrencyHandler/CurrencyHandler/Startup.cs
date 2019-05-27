@@ -36,18 +36,18 @@ namespace CurrencyHandler
             services.AddScoped<ICurrenciesRepository, CurrenciesRepository>();
             services.AddScoped<ICurrenciesEmojisRepository, CurrenciesEmojisRepository>();
 
-            services.AddScoped<IValueCurrencyKeyboardHandler, ValueCurrencyKeyboardHandler>();
-            services.AddScoped<IDisplayCurrenciesKeyboardHandler, DisplayCurrenciesKeyboardHandler>();
+            services.AddScoped<IInlineKeyboardHandler, ValueCurrencyKeyboardHandler>();
+            services.AddScoped<IInlineKeyboardHandler, DisplayCurrenciesKeyboardHandler>();
 
             services.AddScoped<IKeyboards, Keyboards>();
 
-            services.AddScoped<ICalcCommand, CalcCommand>();
-            services.AddScoped<IDisplayCurrenciesCommand, DisplayCurrenciesCommand>();
-            services.AddScoped<IInfoCommand, InfoCommand>();
-            services.AddScoped<IStartCommand, StartCommand>();
-            services.AddScoped<IValueCurrencyCommand, ValueCurrencyCommand>();
-            services.AddScoped<ISettingsCommand, SettingsCommand>();
-            services.AddScoped<IPercentsCommand, PercentsCommand>();
+            services.AddScoped<ICommand, CalcCommand>();
+            services.AddScoped<ICommand, DisplayCurrenciesCommand>();
+            services.AddScoped<ICommand, InfoCommand>();
+            services.AddScoped<ICommand, StartCommand>();
+            services.AddScoped<ICommand, ValueCurrencyCommand>();
+            services.AddScoped<ICommand, SettingsCommand>();
+            services.AddScoped<ICommand, PercentsCommand>();
 
             services.AddScoped<ICommands, Commands>();
 
