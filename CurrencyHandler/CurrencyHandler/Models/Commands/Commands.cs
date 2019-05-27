@@ -6,24 +6,14 @@ namespace CurrencyHandler.Models.Commands
 {
     public class Commands : ICommands
     {
-        private readonly List<ICommand> commands;
+        private readonly IEnumerable<ICommand> commands;
 
-        public Commands(ICalcCommand c1, IDisplayCurrenciesCommand c2, IValueCurrencyCommand c3,
-            IStartCommand c4, ISettingsCommand c5, IPercentsCommand c6, IInfoCommand c7)
+        public Commands(IEnumerable<ICommand> commands)
         {
-            commands = new List<ICommand>
-                {
-                    c1,
-                    c2,
-                    c3,
-                    c4,
-                    c5,
-                    c6,
-                    c7
-                };
+            this.commands = commands;  
         }
 
-        public IReadOnlyList<ICommand> Get()
+        public IEnumerable<ICommand> Get()
         {
             return commands;
         }

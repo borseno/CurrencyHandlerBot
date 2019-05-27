@@ -8,8 +8,8 @@ using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class InfoCommand : Command, IInfoCommand
-    {
+    public class InfoCommand : Command
+    { 
         private const string InfoTextPath = "Texts/Info.txt";
 
         public InfoCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)

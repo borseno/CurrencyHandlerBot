@@ -7,6 +7,6 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions
     public interface IKeyboards : IDisposable
     {
         IInlineKeyboardHandler FirstOrDefault(string name);
-        IReadOnlyList<IInlineKeyboardHandler> Get();
+        IEnumerable<IInlineKeyboardHandler> Get();
     }
 }
