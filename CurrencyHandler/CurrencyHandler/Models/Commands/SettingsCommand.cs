@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class SettingsCommand : Command, ISettingsCommand
+    public class SettingsCommand : Command
     {
         public SettingsCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {

@@ -7,18 +7,14 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
     public class Keyboards : IKeyboards
     {
-        private readonly List<IInlineKeyboardHandler> keyboards;
+        private readonly IEnumerable<IInlineKeyboardHandler> keyboards;
 
-        public Keyboards(IValueCurrencyKeyboardHandler kb1, IDisplayCurrenciesKeyboardHandler kb2)
+        public Keyboards(IEnumerable<IInlineKeyboardHandler> kb)
         {
-            keyboards = new List<IInlineKeyboardHandler>
-                {
-                    kb1,
-                    kb2
-                };
+            keyboards = kb;
         }
 
-        public IReadOnlyList<IInlineKeyboardHandler> Get()
+        public IEnumerable<IInlineKeyboardHandler> Get()
         {
             return keyboards;
         }

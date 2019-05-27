@@ -8,7 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler, IDisplayCurrenciesKeyboardHandler
+    public class DisplayCurrenciesKeyboardHandler : InlineKeyboardHandler
     {
         private const string ChosenText = " ✅";
 

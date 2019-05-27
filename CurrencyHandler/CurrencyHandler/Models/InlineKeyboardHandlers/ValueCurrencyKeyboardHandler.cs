@@ -7,7 +7,7 @@ using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public class ValueCurrencyKeyboardHandler : InlineKeyboardHandler, IValueCurrencyKeyboardHandler
+    public class ValueCurrencyKeyboardHandler : InlineKeyboardHandler
     {
         public override string Name => "ValueCurrency";
 

@@ -21,7 +21,9 @@ namespace CurrencyHandler.Models.InlineKeyboardHandlers
             Bot = Models.Bot.GetClient();
         }
 
-        public abstract string Name { get; }
+        // if ends with InlineKeyboardHandler, then default name is name with abstract class'es name trimmed
+        public virtual string Name => GetType().Name.Substring(0,
+            GetType().Name.LastIndexOf(nameof(InlineKeyboardHandler)));
 
         public bool Contains(string callBackData)
         {
