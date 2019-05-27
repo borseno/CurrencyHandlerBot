@@ -1,33 +1,31 @@
 ﻿using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.InlineKeyboardHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using System;
+using CurrencyHandler.Models.Commands.Abstractions;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
 {
-    class ValueCurrencyCommand : Command
+    public class ValueCurrencyCommand : Command
     {
-        public static ValueCurrencyCommand Instance { get; } = new ValueCurrencyCommand();
+        public ValueCurrencyCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
+        {
+        }
 
         public override string Name => "ValueCurrency";
 
-        private ValueCurrencyCommand()
+        public override async Task Execute(Message message)
         {
-
-        }
-
-        public override async Task Execute(Message message, TelegramBotClient client, CurrenciesRepository repo)
-        {
-            var keyboard = Keyboards.FirstOrDefault(repo, Name);
+            var keyboard = Keyboards.FirstOrDefault(Name);
 
             if (keyboard == null)
             {
                 throw new InvalidOperationException("could not find an appropriate keyboard");
             }
 
-            await keyboard.SendKeyboardAsync(message, client);
+            await keyboard.SendKeyboardAsync(message);
         }
     }
 }

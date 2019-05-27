@@ -1,6 +1,11 @@
 ﻿using CurrencyHandler.Models;
+using CurrencyHandler.Models.Commands;
+using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Contexts;
 using CurrencyHandler.Models.Database.Repositories;
+using CurrencyHandler.Models.InlineKeyboardHandlers;
+using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
+using CurrencyHandler.Models.QueryHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +33,25 @@ namespace CurrencyHandler
             services.AddDbContext<ChatSettingsContext>(
                 options => options.UseSqlServer(connectionString));
 
-            services.AddScoped<CurrenciesRepository>();
+            services.AddScoped<ICurrenciesRepository, CurrenciesRepository>();
+            services.AddScoped<ICurrenciesEmojisRepository, CurrenciesEmojisRepository>();
 
-            services.AddScoped<CurrenciesEmojisRepository>();
+            services.AddScoped<IInlineKeyboardHandler, ValueCurrencyKeyboardHandler>();
+            services.AddScoped<IInlineKeyboardHandler, DisplayCurrenciesKeyboardHandler>();
+
+            services.AddScoped<IKeyboards, Keyboards>();
+
+            services.AddScoped<ICommand, CalcCommand>();
+            services.AddScoped<ICommand, DisplayCurrenciesCommand>();
+            services.AddScoped<ICommand, InfoCommand>();
+            services.AddScoped<ICommand, StartCommand>();
+            services.AddScoped<ICommand, ValueCurrencyCommand>();
+            services.AddScoped<ICommand, SettingsCommand>();
+            services.AddScoped<ICommand, PercentsCommand>();
+
+            services.AddScoped<ICommands, Commands>();
+
+            services.AddScoped<IInlineQueryHandler, InlineQueryHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +77,7 @@ namespace CurrencyHandler
             });
 
             //Bot Configurations
-            Bot.GetAsync().GetAwaiter().GetResult();
+            Bot.Init();
         }
     }
 }

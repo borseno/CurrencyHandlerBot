@@ -1,26 +1,33 @@
-﻿using CurrencyHandler.Models.Database.Repositories;
+﻿using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers
 {
-    public static class Keyboards
+    public class Keyboards : IKeyboards
     {
-        public static IReadOnlyList<InlineKeyboardHandler> Get(CurrenciesRepository repo)
-        {
-            var keyboards = new List<InlineKeyboardHandler>
-                {
-                    new ValueCurrencyKeyboardHandler(repo),
-                    new DisplayCurrenciesKeyboardHandler(repo)
-                };
+        private readonly IEnumerable<IInlineKeyboardHandler> keyboards;
 
+        public Keyboards(IEnumerable<IInlineKeyboardHandler> kb)
+        {
+            keyboards = kb;
+        }
+
+        public IEnumerable<IInlineKeyboardHandler> Get()
+        {
             return keyboards;
         }
 
-        public static InlineKeyboardHandler FirstOrDefault(CurrenciesRepository repo, string name)
+        public IInlineKeyboardHandler FirstOrDefault(string name)
         {
-            return Get(repo).FirstOrDefault(kb => String.Equals(kb.Name, name, StringComparison.CurrentCultureIgnoreCase));
+            return Get().FirstOrDefault(kb => String.Equals(kb.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public void Dispose()
+        {
+            foreach (var i in keyboards)
+                i.Dispose();
         }
     }
 }

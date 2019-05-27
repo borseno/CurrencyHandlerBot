@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CurrencyHandler.Models.Database.Repositories
 {
-    public class CurrenciesEmojisRepository : IDisposable
+    public class CurrenciesEmojisRepository : ICurrenciesEmojisRepository
     {
         protected ChatSettingsContext Context { get; }
 
@@ -19,52 +19,74 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public IEnumerable<CurrencyEmoji> GetCurrencyEmojis()
         {
-            return Context.CurrencyEmojis;
+            return Context.CurrencyEmojis.AsNoTracking();
         }
 
         public IEnumerable<string> GetCurrencies()
         {
-            return Context.CurrencyEmojis.Select(ce => ce.Currency);
+            return Context.CurrencyEmojis
+                .Select(ce => ce.Currency)
+                .AsNoTracking();
         }
 
         public IEnumerable<string> GetEmojis()
         {
-            return Context.CurrencyEmojis.Select(ce => ce.Emoji);
+            return Context.CurrencyEmojis
+                .Select(ce => ce.Emoji)
+                .AsNoTracking();
         }
 
         public async Task<CurrencyEmoji[]> GetCurrencyEmojisAsync()
         {
-            return await Context.CurrencyEmojis.ToArrayAsync();
+            return await Context.CurrencyEmojis
+                .AsNoTracking()
+                .ToArrayAsync();
         }
 
         public async Task<string[]> GetCurrenciesAsync()
         {
-            return await Context.CurrencyEmojis.Select(ce => ce.Currency).ToArrayAsync();
+            return await Context.CurrencyEmojis
+                .Select(ce => ce.Currency)
+                .AsNoTracking()
+                .ToArrayAsync();
         }
 
         public async Task<string[]> GetEmojisAsync()
         {
-            return await Context.CurrencyEmojis.Select(ce => ce.Emoji).ToArrayAsync();
+            return await Context.CurrencyEmojis
+                .Select(ce => ce.Emoji)
+                .AsNoTracking()
+                .ToArrayAsync();
         }
 
         public async Task<string> GetCurrencyFromEmojiAsync(string emoji)
         {
-            return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji)).Currency;
+            return (await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstAsync(ce => ce.Emoji == emoji)
+                ).Currency;
         }
 
         public async Task<string> GetEmojiFromCurrencyAsync(string currency)
         {
-            return (await Context.CurrencyEmojis.FirstAsync(ce => ce.Currency == currency)).Emoji;
+            return (await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstAsync(ce => ce.Currency == currency)
+                ).Emoji;
         }
 
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromCurrencyAsync(string currency)
         {
-            return await Context.CurrencyEmojis.FirstAsync(ce => ce.Currency == currency);
+            return await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstAsync(ce => ce.Currency == currency);
         }
 
         public async Task<CurrencyEmoji> GetCurrencyEmojiFromEmojiAsync(string emoji)
         {
-            return await Context.CurrencyEmojis.FirstAsync(ce => ce.Emoji == emoji);
+            return await Context.CurrencyEmojis
+                .AsNoTracking()
+                .FirstAsync(ce => ce.Emoji == emoji);
         }
 
         public void Dispose()
