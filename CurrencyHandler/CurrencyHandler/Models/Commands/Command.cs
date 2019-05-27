@@ -24,7 +24,8 @@ namespace CurrencyHandler.Models.Commands
         protected IKeyboards Keyboards { get; }
 
         // e.g PercentsCommand -> default name is Percents
-        public virtual string Name => GetType().Name.TrimEnd(nameof(Command).ToCharArray());
+        public virtual string Name => GetType().Name.Substring(0, 
+            GetType().Name.LastIndexOf(nameof(Command)));
 
         public abstract Task Execute(Message message);
 
