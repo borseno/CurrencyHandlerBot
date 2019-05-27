@@ -76,13 +76,13 @@ namespace CurrencyHandler.Models.Database.Contexts
                 .Property(cs => cs.Percents)
                 .HasDefaultValue(DefaultValues.DefaultPercents);
 
-            mb.Entity<ChatSettings>()
-                .Property(cs => cs.ValueCurrency)
-                .HasDefaultValue(DefaultValues.DefaultValueCurrency);
+            //mb.Entity<ChatSettings>()
+            //    .Property(cs => cs.ValueCurrency)
+            //    .HasDefaultValue(DefaultValues.DefaultValueCurrency); // mysql can't have default text values
 
-            mb.Entity<ChatSettings>()
-                .Property(cs => cs.DisplayCurrencies)
-                .HasDefaultValue(DefaultValues.DefaultDisplayCurrencies);
+            //mb.Entity<ChatSettings>()
+            //    .Property(cs => cs.DisplayCurrencies)
+            //    .HasDefaultValue(DefaultValues.DefaultDisplayCurrencies);
         }
 
     }
