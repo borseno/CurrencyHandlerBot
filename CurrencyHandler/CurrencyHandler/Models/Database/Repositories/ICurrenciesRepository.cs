@@ -25,6 +25,7 @@ namespace CurrencyHandler.Models.Database.Repositories
         Task<string[]> GetDisplayEmojisAsync(long chatId);
         Task AddDisplayEmojisAsync(string emoji, long chatID);
         Task RemoveDisplayEmojisAsync(string emoji, long chatID);
+        Task EnsureChatCreatedAsync(long chatId);
     }
     
     public partial interface ICurrenciesRepository /* sync methods */

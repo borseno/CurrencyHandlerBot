@@ -54,13 +54,8 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         protected async Task<ChatSettings> InitChatAsync(long chatId)
         {
-            var entity = new ChatSettings
-            {
-                ChatId = chatId,
-                Percents = DefaultValues.DefaultPercents,
-                ValueCurrency = DefaultValues.DefaultValueCurrency,
-                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
-            };
+            var entity = DefaultValues.DefaultEntity;
+            entity.ChatId = chatId;
 
             await Context.ChatSettings.AddAsync(entity);
 
@@ -254,7 +249,8 @@ namespace CurrencyHandler.Models.Database.Repositories
         {
             var chat = await Context.ChatSettings
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.ChatId == chatId);
+                .FirstOrDefaultAsync(t => t.ChatId == chatId)
+                ;
 
             return chat?.Percents ?? (await InitChatAsync(chatId)).Percents;
         }
@@ -371,10 +367,10 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<IReadOnlyList<CurrencyEmoji>> GetDisplayCurrenciesEmojisAsync(long chatId)
         {
-            var chat = (await Context.ChatSettings
+            var chat = await Context.ChatSettings
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cs => cs.ChatId == chatId)
-                );
+                ;
 
             if (chat == null)
             {
@@ -414,6 +410,21 @@ namespace CurrencyHandler.Models.Database.Repositories
         public async Task<string[]> GetAllEmojisAsync()
         {
             return await CurrenciesEmojisRepository.GetEmojisAsync();
+        }
+
+        /// <summary>
+        /// if the chat does not exist in the database, adds the chat. If exists, does nothing.
+        /// </summary>
+        /// <param name="chatId"></param>
+        /// <returns></returns>
+        public async Task EnsureChatCreatedAsync(long chatId)
+        {
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(i => i.ChatId == chatId);
+
+            if (chat == null)
+            {
+                await InitChatAsync(chatId);
+            }
         }
 
         public void Dispose()
