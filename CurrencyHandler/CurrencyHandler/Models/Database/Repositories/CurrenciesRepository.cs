@@ -59,6 +59,8 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             await Context.ChatSettings.AddAsync(entity);
 
+            await Context.SaveChangesAsync();
+
             return entity;
         }
 
