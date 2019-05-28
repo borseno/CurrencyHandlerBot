@@ -246,10 +246,10 @@ namespace CurrencyHandler.Models.Database.Repositories
         public async Task<decimal> GetPercentsAsync(long chatId)
         {
             var chat = await Context.ChatSettings
-                .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.ChatId == chatId);
+                .FirstAsync(t => t.ChatId == chatId)
+                ;
 
-            return chat?.Percents ?? (await InitChatAsync(chatId)).Percents;
+            return chat.Percents;// ?? (await InitChatAsync(chatId)).Percents;
         }
 
         public string GetCurrencyFromEmoji(string emoji)
