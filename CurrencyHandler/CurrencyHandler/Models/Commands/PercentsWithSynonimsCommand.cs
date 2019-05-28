@@ -24,16 +24,21 @@ namespace CurrencyHandler.Models.Commands
         {
             return mainCommand.Execute(message);
         }
-
+            
         public override bool Contains(string command)
         {
             const char Space = ' ';
+            const char CommandIdentifier = '/';
 
             var result = mainCommand.Contains(command);
 
-            var pureCommandName = command.Substring(0, command.IndexOf(Space));
+            var pureCommand = command
+                .TrimStart(CommandIdentifier)
+                .Substring(0, command.TrimStart(CommandIdentifier).IndexOf(Space));
 
-            return result ? result : mainCommand.Name.StartsWith(pureCommandName);
+            return result ? result : mainCommand
+                .Name
+                .StartsWith(pureCommand, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
