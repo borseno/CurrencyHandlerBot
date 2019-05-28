@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CurrencyHandler.Models.Database.Models;
+using System.Collections.Generic;
 
 namespace CurrencyHandler.Models.HelperClasses
 {
@@ -10,13 +11,20 @@ namespace CurrencyHandler.Models.HelperClasses
 
         public const string APICurrency = "RUB";
 
-        public static readonly List<string> DefaultDisplayCurrencies = new List<string>
+        public static List<string> DefaultDisplayCurrencies { get; } = new List<string>
         {
             "UAH",
             "RUB",
             "EUR",
             "USD",
             "BYN"
+        };
+
+        public static ChatSettings DefaultEntity => new ChatSettings
+        {
+            Percents = DefaultPercents,
+            ValueCurrency = DefaultValueCurrency,
+            DisplayCurrencies = DefaultDisplayCurrencies
         };
     }
 }

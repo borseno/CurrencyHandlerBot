@@ -33,13 +33,8 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         protected ChatSettings InitChat(long chatId)
         {
-            var entity = new ChatSettings
-            {
-                ChatId = chatId,
-                Percents = DefaultValues.DefaultPercents,
-                ValueCurrency = DefaultValues.DefaultValueCurrency,
-                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
-            };
+            var entity = DefaultValues.DefaultEntity;
+            entity.ChatId = chatId;
 
             Context.ChatSettings.Add(entity);
 
@@ -59,17 +54,10 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         protected async Task<ChatSettings> InitChatAsync(long chatId)
         {
-            var entity = new ChatSettings
-            {
-                ChatId = chatId,
-                Percents = DefaultValues.DefaultPercents,
-                ValueCurrency = DefaultValues.DefaultValueCurrency,
-                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
-            };
+            var entity = DefaultValues.DefaultEntity;
+            entity.ChatId = chatId;
 
             await Context.ChatSettings.AddAsync(entity);
-
-            await Context.SaveChangesAsync();
 
             return entity;
         }
@@ -172,11 +160,9 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             if (chat == null)
             {
-                chat = new ChatSettings
-                {
-                    ChatId = chatId,
-                    ValueCurrency = value
-                };
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+                chat.ValueCurrency = value;
 
                 AddChat(chat);
             }
@@ -194,11 +180,9 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             if (chat == null)
             {
-                chat = new ChatSettings
-                {
-                    ChatId = chatId,
-                    Percents = value
-                };
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+                chat.Percents = value;
 
                 AddChat(chat);
             }
@@ -216,11 +200,9 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             if (chat == null)
             {
-                chat = new ChatSettings
-                {
-                    ChatId = chatId,
-                    ValueCurrency = value
-                };
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+                chat.ValueCurrency = value;
 
                 await AddChatAsync(chat);
             }
@@ -238,12 +220,10 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             if (chat == null)
             {
-                chat = new ChatSettings
-                {
-                    ChatId = chatId,
-                    Percents = value
-                };
-
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+                chat.Percents = value;
+                
                 await AddChatAsync(chat);
             }
             else
@@ -327,29 +307,42 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task SetDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)
-                       ?? new ChatSettings();
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
 
-            chat.DisplayCurrencies = displayCurrencies.ToList();
+            if (chat == null)
+            {
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+                chat.DisplayCurrencies = displayCurrencies.ToList();
 
-            await Context.SaveChangesAsync();
+                await AddChatAsync(chat);
+            }
+            else
+            {
+                chat.DisplayCurrencies = displayCurrencies.ToList();
+
+                await Context.SaveChangesAsync();
+            }
         }
 
         public async Task AddRangeDisplayCurrenciesAsync(IEnumerable<string> displayCurrencies, long chatId)
         {
-            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId)
-                       ?? new ChatSettings();
+            var chat = await Context.ChatSettings.FirstOrDefaultAsync(cs => cs.ChatId == chatId);
 
-            if (chat.DisplayCurrencies == null)
+            if (chat == null)
             {
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
                 chat.DisplayCurrencies = displayCurrencies.ToList();
+
+                await AddChatAsync(chat);
             }
             else
             {
                 chat.DisplayCurrencies.AddRange(displayCurrencies);
-            }
 
-            await Context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
+            }
         }
 
         public async Task<IReadOnlyList<string>> GetDisplayCurrenciesAsync(long chatId)
@@ -360,11 +353,8 @@ namespace CurrencyHandler.Models.Database.Repositories
 
             if (chat == null)
             {
-                chat = new ChatSettings
-                {
-                    ChatId = chatId,
-                    DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
-                };
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
 
                 await AddChatAsync(chat);
             }
@@ -374,10 +364,20 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         public async Task<IReadOnlyList<CurrencyEmoji>> GetDisplayCurrenciesEmojisAsync(long chatId)
         {
-            var displayCurrencies = (await Context.ChatSettings
+            var chat = (await Context.ChatSettings
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cs => cs.ChatId == chatId)
-                ).DisplayCurrencies;
+                );
+
+            if (chat == null)
+            {
+                chat = DefaultValues.DefaultEntity;
+                chat.ChatId = chatId;
+
+                await AddChatAsync(chat);
+            }
+
+            var displayCurrencies = chat.DisplayCurrencies;
 
             var currenciesEmojis = Context.CurrencyEmojis.AsNoTracking();
 

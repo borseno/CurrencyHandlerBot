@@ -48,6 +48,7 @@ namespace CurrencyHandler
             services.AddScoped<ICommand, ValueCurrencyCommand>();
             services.AddScoped<ICommand, SettingsCommand>();
             services.AddScoped<ICommand, PercentsCommand>();
+            services.AddScoped<ICommand, PercentsWithSynonymsCommand>();
 
             services.AddScoped<ICommands, Commands>();
 
