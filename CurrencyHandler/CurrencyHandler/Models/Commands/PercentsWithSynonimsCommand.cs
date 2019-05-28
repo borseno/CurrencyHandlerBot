@@ -32,9 +32,18 @@ namespace CurrencyHandler.Models.Commands
 
             var result = mainCommand.Contains(command);
 
-            var pureCommand = command
-                .TrimStart(CommandIdentifier)
-                .Substring(0, command.TrimStart(CommandIdentifier).IndexOf(Space));
+            string pureCommand;
+
+            try
+            {
+                pureCommand = command
+                    .TrimStart(CommandIdentifier)
+                    .Substring(0, command.TrimStart(CommandIdentifier).IndexOf(Space));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return false;
+            }
 
             return result ? result : mainCommand
                 .Name
