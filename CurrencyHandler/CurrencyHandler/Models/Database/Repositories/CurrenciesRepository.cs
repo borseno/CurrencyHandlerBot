@@ -54,17 +54,10 @@ namespace CurrencyHandler.Models.Database.Repositories
 
         protected async Task<ChatSettings> InitChatAsync(long chatId)
         {
-            var entity = new ChatSettings
-            {
-                ChatId = chatId,
-                Percents = DefaultValues.DefaultPercents,
-                ValueCurrency = DefaultValues.DefaultValueCurrency,
-                DisplayCurrencies = DefaultValues.DefaultDisplayCurrencies
-            };
+            var entity = DefaultValues.DefaultEntity;
+            entity.ChatId = chatId;
 
             await Context.ChatSettings.AddAsync(entity);
-
-            await Context.SaveChangesAsync();
 
             return entity;
         }
