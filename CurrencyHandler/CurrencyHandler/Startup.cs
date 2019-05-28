@@ -43,7 +43,7 @@ namespace CurrencyHandler
 
             services.AddScoped<ICommand, CalcCommand>();
             services.AddScoped<ICommand, DisplayCurrenciesCommand>();
-            services.AddScoped<ICommand, InfoCommand>();
+            services.AddScoped<ICommand, HelpCommand>();
             services.AddScoped<ICommand, StartCommand>();
             services.AddScoped<ICommand, ValueCurrencyCommand>();
             services.AddScoped<ICommand, SettingsCommand>();

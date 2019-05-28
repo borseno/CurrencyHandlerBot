@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CurrencyHandler.Models;
 using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.ExceptionsHandling;
 using CurrencyHandler.Models.Extensions;

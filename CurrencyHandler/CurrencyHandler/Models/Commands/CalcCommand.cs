@@ -2,11 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.DataCaching;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.HelperClasses;
-using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
@@ -21,7 +19,7 @@ namespace CurrencyHandler.Models.Commands
             charsToIgnore = $"/{Name.ToLower()}{Name.ToUpper()}".ToCharArray();
         }
 
-        public override string Name => "Calc";
+        public override string Name => "C";
 
         /// <summary>
         /// Executes the "Calc" command, which is the main command of the app.

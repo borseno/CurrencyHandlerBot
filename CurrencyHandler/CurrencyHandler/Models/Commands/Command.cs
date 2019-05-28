@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;

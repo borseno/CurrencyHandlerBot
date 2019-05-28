@@ -1,5 +1,4 @@
 ﻿using CurrencyHandler.Models.Commands.Abstractions;
-using System;
 using System.Collections.Generic;
 
 namespace CurrencyHandler.Models.Commands

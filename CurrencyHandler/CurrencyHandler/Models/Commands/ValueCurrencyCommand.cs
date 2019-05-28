@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using System;
-using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 
 namespace CurrencyHandler.Models.Commands
@@ -14,7 +12,7 @@ namespace CurrencyHandler.Models.Commands
         {
         }
 
-        public override string Name => "ValueCurrency";
+        public override string Name => "Vc";
 
         public override async Task Execute(Message message)
         {

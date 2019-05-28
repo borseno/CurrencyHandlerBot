@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Telegram.Bot.Types;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
+using static System.IO.File;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
-using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
 {
-    public class DisplayCurrenciesCommand : Command
-    {
-        public DisplayCurrenciesCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
+    public class HelpCommand : Command
+    { 
+        private const string HelpTextPath = "Texts/Help.txt";
+
+        public HelpCommand(IKeyboards keyboards, ICurrenciesRepository repo) : base(keyboards, repo)
         {
         }
 
-        public override string Name => "Dc";
+        public override string Name => "Help";
 
         /// <summary>
-        /// Sends DisplayCurrenciesKeyboard to the chat 
+        /// Sends Info.txt content to the chat 
         /// </summary>
         /// <param name="message">the message a user sent</param>
         /// <param name="client">Bot instance, needed to answer on the message</param>
@@ -23,16 +25,12 @@ namespace CurrencyHandler.Models.Commands
         /// <returns>Task to be awaited</returns>
         public override async Task Execute(Message message)
         {
-            var keyboard = Keyboards.FirstOrDefault(Name);
+            var messageId = message.MessageId;
+            var chatId = message.Chat.Id;
 
-            if (keyboard != null)
-            {
-                await keyboard.SendKeyboardAsync(message);
-            }
-            else
-            {
-                throw new InvalidOperationException("could not find an appropriate keyboard");
-            }
+            var text = await ReadAllTextAsync(HelpTextPath);
+
+            await Client.SendTextMessageAsync(chatId, text, replyToMessageId: messageId);
         }
     }
 }

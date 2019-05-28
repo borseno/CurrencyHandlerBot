@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Models;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.InlineKeyboardHandlers

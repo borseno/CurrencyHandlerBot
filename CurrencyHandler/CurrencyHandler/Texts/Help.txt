@@ -1,0 +1,6 @@
+﻿/vc - set currency to be considered
+/dc - set currencies to be calculated and displayed
+/s - display info about your current settings
+/p n - set percents of the money input to be considered (n is input field, e.g /p 100)
+/c n - translate and display your amount of money in other currencies (n is input field e.g /c 100)
+/help - get info about commands

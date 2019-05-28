@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
@@ -14,7 +12,7 @@ namespace CurrencyHandler.Models.Commands
         {
         }
 
-        public override string Name => "Settings";
+        public override string Name => "S";
 
         // TODO: 1. Add DisplayCurrencies to settings output
         // TODO: 2. Add emojis to currencies

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CurrencyHandler.Models.Commands.Abstractions;
 using CurrencyHandler.Models.Database.Repositories;
 using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace CurrencyHandler.Models.Commands
@@ -15,7 +12,7 @@ namespace CurrencyHandler.Models.Commands
         {
         }
 
-        public override string Name => "Percents";
+        public override string Name => "P";
 
         /// <summary>
         /// Handles percents settings change for the chat 

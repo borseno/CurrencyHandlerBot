@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyHandler.Models.Database.Repositories;
-using CurrencyHandler.Models.InlineKeyboardHandlers.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
