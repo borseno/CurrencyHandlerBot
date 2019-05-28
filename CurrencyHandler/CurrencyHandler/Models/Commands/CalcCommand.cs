@@ -49,13 +49,18 @@ namespace CurrencyHandler.Models.Commands
 
             var messageId = message.MessageId;
             var chatId = message.Chat.Id;
+
             var dataTask = CurrenciesDataCaching.GetValCursAsync();
+            var ensureCreatedTask = Repo.EnsureChatCreatedAsync(chatId);
+
+            await ensureCreatedTask; // ensure chat is created, so that it is not added multiple times (in multiple threads)
+
+            // execute them all in parallel and wait for the completion
             var percentsTask = Repo.GetPercentsAsync(chatId);
             var valueCurrencyTask = Repo.GetCurrencyEmojiAsync(chatId);
             var displayCurrenciesTask = Repo.GetDisplayCurrenciesEmojisAsync(chatId);
 
-            // execute them all in parallel and wait for the completion
-            await Task.WhenAll(dataTask, percentsTask, displayCurrenciesTask, valueCurrencyTask);
+            await Task.WhenAll(dataTask, percentsTask, valueCurrencyTask, displayCurrenciesTask);
 
             var values =
                 await ValuesCalculator.GetCurrenciesValuesAsync(
