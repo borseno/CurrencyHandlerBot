@@ -6,6 +6,6 @@
 
         public const string Name = "YOUR_NAME"; // bot name
 
-        public const string Key = "YOUR_BOT_TOKEN";
+        public const string Key = "YOUR_BOT_TOKEN"; //bot token
     }
 }
